@@ -1345,9 +1345,12 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 <div class="key-api-row">
 <div class="key-api-label">模型</div>
 <select class="key-api-input" id="apiModelSelect">
-<option value="claude-sonnet-4-6">Claude Sonnet 4.6</option>
-<option value="claude-opus-4-6">Claude Opus 4.6</option>
-<option value="claude-haiku-4-5-20251001">Claude Haiku 4.5</option>
+<option value="claude-sonnet-4-6">Sonnet 4.6（Anthropic直连）</option>
+<option value="claude-opus-4-6">Opus 4.6（Anthropic直连）</option>
+<option value="claude-haiku-4-5-20251001">Haiku 4.5（Anthropic直连）</option>
+<option value="anthropic/claude-sonnet-4-6">Sonnet 4.6（OpenRouter）</option>
+<option value="anthropic/claude-opus-4-6">Opus 4.6（OpenRouter）</option>
+<option value="anthropic/claude-haiku-4-5">Haiku 4.5（OpenRouter）</option>
 </select>
 </div>
 <div class="key-api-btns">
@@ -2831,51 +2834,64 @@ return ctx;
 }
 
 /* 发送消息给API */
+function isOpenRouterCfg(cfg){
+return (cfg.proxy&&cfg.proxy.indexOf('openrouter')>-1)||(cfg.model&&cfg.model.indexOf('/')>-1);
+}
 function sendToAPI(userMsg,onChunk,onDone,onError){
 var cfg=JSON.parse(localStorage.getItem('zz_api')||'{}');
 if(!cfg.key){if(onError)onError('请先配置API Key');return}
-var url=cfg.proxy?(cfg.proxy+'/v1/messages'):'https://api.anthropic.com/v1/messages';
+var isOR=isOpenRouterCfg(cfg);
+var url,headers,body;
 var history=JSON.parse(localStorage.getItem('zz_chat_history')||'[]');
 history.push({role:'user',content:userMsg});
 if(history.length>20)history=history.slice(-20);
 
-var messages=[
-{role:'user',content:[
+if(isOR){
+/* OpenRouter — OpenAI兼容格式 */
+url=(cfg.proxy||'https://openrouter.ai/api')+'/v1/chat/completions';
+headers={'Content-Type':'application/json','Authorization':'Bearer '+cfg.key,'HTTP-Referer':'https://lz520-qkl.github.io/-/','X-Title':'LittleHouse'};
+var orMsgs=[{role:'system',content:STABLE_PROMPT+'\n\n'+buildDynamicContext()}];
+history.forEach(function(h){orMsgs.push({role:h.role,content:h.content})});
+body=JSON.stringify({model:cfg.model||'anthropic/claude-sonnet-4-6',max_tokens:4096,messages:orMsgs});
+}else{
+/* Anthropic直连 */
+url=cfg.proxy?(cfg.proxy+'/v1/messages'):'https://api.anthropic.com/v1/messages';
+headers={'Content-Type':'application/json','x-api-key':cfg.key,'anthropic-version':'2023-06-01'};
+var antMsgs=[{role:'user',content:[
 {type:'text',text:STABLE_PROMPT,cache_control:{type:'ephemeral'}},
 {type:'text',text:buildDynamicContext()}
-]}
-];
-/* 加入对话历史 */
-history.forEach(function(h){messages.push({role:h.role,content:h.content})});
+]}];
+history.forEach(function(h){antMsgs.push({role:h.role,content:h.content})});
+body=JSON.stringify({model:cfg.model||'claude-sonnet-4-6',max_tokens:4096,messages:antMsgs,metadata:{user_id:ZZ_SESSION_ID}});
+}
 
-fetch(url,{
-method:'POST',
-headers:{'Content-Type':'application/json','x-api-key':cfg.key,'anthropic-version':'2023-06-01'},
-body:JSON.stringify({
-model:cfg.model||'claude-sonnet-4-6',
-max_tokens:4096,
-messages:messages,
-metadata:{user_id:ZZ_SESSION_ID}
-})
-}).then(function(r){
+fetch(url,{method:'POST',headers:headers,body:body})
+.then(function(r){
 if(!r.ok)return r.text().then(function(t){if(onError)onError('API错误 '+r.status+': '+t.slice(0,80))});
 return r.json().then(function(data){
 var reply='';
+if(isOR){
+/* OpenRouter响应：choices[0].message.content */
+if(data.choices&&data.choices[0])reply=data.choices[0].message.content||'';
+}else{
+/* Anthropic响应：content[].text */
 data.content.forEach(function(c){if(c.type==='text')reply+=c.text});
+}
 history.push({role:'assistant',content:reply});
 localStorage.setItem('zz_chat_history',JSON.stringify(history));
 /* 记录usage */
-if(data.usage){
+var u=isOR?data.usage:data.usage;
+if(u){
 var usage=JSON.parse(localStorage.getItem('zz_usage')||'{}');
 var month=new Date().getFullYear()+'-'+(new Date().getMonth()+1);
 if(!usage[month])usage[month]={msgs:0,tokens:0,cache_read:0,cache_create:0};
 usage[month].msgs++;
-usage[month].tokens+=(data.usage.input_tokens||0)+(data.usage.output_tokens||0);
-usage[month].cache_read+=(data.usage.cache_read_input_tokens||0);
-usage[month].cache_create+=(data.usage.cache_creation_input_tokens||0);
+usage[month].tokens+=(u.prompt_tokens||u.input_tokens||0)+(u.completion_tokens||u.output_tokens||0);
+usage[month].cache_read+=(u.cache_read_input_tokens||0);
+usage[month].cache_create+=(u.cache_creation_input_tokens||0);
 localStorage.setItem('zz_usage',JSON.stringify(usage));
 }
-if(onDone)onDone(reply,data.usage);
+if(onDone)onDone(reply,u);
 });
 }).catch(function(e){if(onError)onError(e.message)});
 }
@@ -2936,13 +2952,19 @@ function testApiConnection(){
 var cfg=JSON.parse(localStorage.getItem('zz_api')||'{}');
 var status=document.getElementById('apiStatus');
 if(!cfg.key){status.textContent='请先填写API Key';status.style.color='rgba(255,100,100,.5)';return}
-var url=cfg.proxy?cfg.proxy+'/v1/messages':'https://api.anthropic.com/v1/messages';
+var isOR=isOpenRouterCfg(cfg);
+var url,headers,body;
+if(isOR){
+url=(cfg.proxy||'https://openrouter.ai/api')+'/v1/chat/completions';
+headers={'Content-Type':'application/json','Authorization':'Bearer '+cfg.key,'HTTP-Referer':'https://lz520-qkl.github.io/-/','X-Title':'LittleHouse'};
+body=JSON.stringify({model:cfg.model||'anthropic/claude-sonnet-4-6',max_tokens:10,messages:[{role:'user',content:'hi'}]});
+}else{
+url=cfg.proxy?cfg.proxy+'/v1/messages':'https://api.anthropic.com/v1/messages';
+headers={'Content-Type':'application/json','x-api-key':cfg.key,'anthropic-version':'2023-06-01'};
+body=JSON.stringify({model:cfg.model||'claude-sonnet-4-6',max_tokens:10,messages:[{role:'user',content:'hi'}]});
+}
 status.textContent='连接中...';status.style.color='rgba(var(--gold),.3)';
-fetch(url,{
-method:'POST',
-headers:{'Content-Type':'application/json','x-api-key':cfg.key,'anthropic-version':'2023-06-01'},
-body:JSON.stringify({model:cfg.model||'claude-sonnet-4-6',max_tokens:10,messages:[{role:'user',content:'hi'}]})
-}).then(function(r){
+fetch(url,{method:'POST',headers:headers,body:body}).then(function(r){
 if(r.ok){status.textContent='连接成功 ✓';status.style.color='rgba(100,180,120,.6)'}
 else{r.text().then(function(t){status.textContent='错误 '+r.status+': '+t.slice(0,60);status.style.color='rgba(255,100,100,.5)'})}
 }).catch(function(e){
