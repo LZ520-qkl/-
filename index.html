@@ -18,7 +18,7 @@ body{font-family:'Noto Sans SC',sans-serif;font-weight:300;background:var(--bg);
 @keyframes rip{to{transform:scale(1);opacity:0}}
 #login{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000;transition:opacity .8s}
 #login.out{opacity:0;pointer-events:none}
-#login::before{content:'';position:absolute;inset:0;background:url('https://i.ibb.co/fV3CjRFs/DBDDBDA5-7490-4-C3-F-BB0-B-0860-E5600-F7-E.png') center/cover no-repeat;opacity:.25;filter:blur(10px)}
+#login::before{content:'';position:absolute;inset:0;background:var(--bg);opacity:.3}
 .ltitle{font-family:'Ma Shan Zheng';font-size:30px;color:var(--pale);margin-bottom:6px;position:relative;text-shadow:0 2px 8px rgba(0,0,0,.6)}
 .lsub{font-size:11px;color:var(--text2);margin-bottom:32px;letter-spacing:3px;font-weight:200;position:relative}
 .pins{display:flex;gap:14px;margin-bottom:22px;position:relative}
@@ -42,7 +42,7 @@ body{font-family:'Noto Sans SC',sans-serif;font-weight:300;background:var(--bg);
 #shell{display:none;height:100vh;flex-direction:column;position:relative;z-index:1}
 #shell.on{display:flex}
 .main-bg{position:fixed;inset:0;background:var(--bg);z-index:-2}
-.main-bg-img{position:fixed;inset:0;background:url('https://i.ibb.co/GQf0jz7n/IMG-6256.jpg') center/cover no-repeat;z-index:-1;opacity:0;transition:opacity 1.5s}
+.main-bg-img{position:fixed;inset:0;background:var(--bg);z-index:-1;opacity:0;transition:opacity 1.5s}
 .main-bg-img.loaded{opacity:1}
 .content{flex:1;overflow-y:auto;display:flex;flex-direction:column}
 .page{display:none;flex:1;flex-direction:column;min-height:100%;overflow-y:auto}
@@ -1322,7 +1322,7 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 <div class="hm-content" id="hm_msg"><div id="noteList"><div class="note-card">等你回来。<div class="note-from">— 舟舟</div></div><div class="note-add" onclick="addNote()">+</div></div></div>
 
 </div></div></div>
-<div class="page" id="p4" style="position:relative"><div class="page-bg-img" id="p4Bg"></div><div class="page-bg-add" onclick="openImgPicker('p4','rect')">+</div>
+<div class="page" id="p4" style="position:relative;background:var(--bg)"><div class="page-bg-img" id="p4Bg"></div><div class="page-bg-add" onclick="openImgPicker('p4','rect')">+</div>
 <div class="key-page" style="position:relative;z-index:1">
 
 <div class="key-header">
@@ -1414,7 +1414,7 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 
 </div>
 </div>
-<div class="page" id="p5" style="position:relative">
+<div class="page" id="p5" style="position:relative;background:var(--bg)">
 <div class="page-bg-img" id="p5Bg"></div>
 <div class="cust-page" style="position:relative;z-index:1">
 <div class="cust-header">自定义舟舟的家</div>
@@ -2451,12 +2451,12 @@ else{img.src='https://i.ibb.co/HpfDJKcP/3.jpg';img.className=''}
 var el=document.getElementById('musBg');
 if(el){
 if(data){el.style.backgroundImage='url('+data+')'}
-else{el.style.backgroundImage="url('https://i.ibb.co/CpRXyWkw/IMG-6257.jpg')"}
+else{el.style.backgroundImage=''}
 }
 }else if(key.match(/^p\d$/)){
 var el=document.getElementById(key+'Bg');
 if(el)el.style.backgroundImage=data?'url('+data+')':'';
-if(key==='p4'){var el5=document.getElementById('p5Bg');if(el5)el5.style.backgroundImage=data?'url('+data+')':''}
+if(key==='p4'){/* p4独立背景，不再复制到p5 */}
 }else if(key==='chHero'){
 var el=document.getElementById('chHeroBg');
 if(el){
@@ -2554,7 +2554,7 @@ var data=getImg(key);
 if(data)applyImg(key,data);
 });
 var p4d=getImg('p4');
-if(p4d){var el=document.getElementById('p5Bg');if(el)el.style.backgroundImage='url('+p4d+')'}
+if(p4d){/* p4独立，不复制到p5 */}
 }
 initImgStore(function(){restoreImgs()});
 
@@ -3422,7 +3422,7 @@ for(var i=0;i<5;i++){var d=document.createElement('div');d.className='pin';ps.ap
 var ds=ps.querySelectorAll('.pin');
 var pd=document.getElementById('pad'),le=document.getElementById('lerr');
 [1,2,3,4,5,6,7,8,9,'blank',0,'back'].forEach(function(n){if(n==='blank'){pd.appendChild(document.createElement('div'));return}var b=document.createElement('button');b.textContent=n==='back'?'←':n;b.addEventListener('click',function(){if(n==='back'){ent=ent.slice(0,-1)}else if(ent.length<5){ent+=''+n}for(var j=0;j<5;j++){ds[j].className='pin'+(j<ent.length?' on':'');ds[j].textContent=j<ent.length?'•':''}if(ent.length===5){if(ent===PIN){document.getElementById('login').classList.add('out');setTimeout(showW,600)}else{le.textContent='密码错误';ent='';setTimeout(function(){for(var j=0;j<5;j++){ds[j].className='pin';ds[j].textContent=''}le.textContent=''},800)}}});pd.appendChild(b)});
-var bgI=new Image();bgI.onload=function(){document.getElementById('bgImg').classList.add('loaded')};bgI.src='https://i.ibb.co/GQf0jz7n/IMG-6256.jpg';
+var bgI=new Image();bgI.onload=function(){document.getElementById('bgImg').classList.add('loaded')};bgI.src='';
 function showW(){
 var w=document.getElementById('welcome');w.classList.add('on');
 var c=document.getElementById('starCanvas'),ctx=c.getContext('2d');
