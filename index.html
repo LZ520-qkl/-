@@ -1986,6 +1986,9 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 <div class="cust-btn" onclick="exportSettings()">📤 导出设置（JSON）</div>
 <div class="cust-btn" onclick="document.getElementById('importInput').click()">📥 导入设置（JSON）</div>
 <input type="file" id="importInput" accept=".json" style="display:none" onchange="importSettings(this)">
+<div class="cust-btn" onclick="exportMemories()">📤 导出记忆</div>
+<div class="cust-btn" onclick="document.getElementById('importMemInput').click()">📥 导入记忆</div>
+<input type="file" id="importMemInput" accept=".json" style="display:none" onchange="importMemories(this)">
 <div class="cust-btn" onclick="showStorageInfo()">📊 查看存储空间</div>
 <div class="cust-btn cust-btn-danger" onclick="cleanRawImgs()">🧹 清理原图缓存（释放空间）</div>
 <div class="cust-btn cust-btn-danger" onclick="resetAll()">⚠️ 恢复默认全部设置</div>
@@ -6408,6 +6411,44 @@ if(data.likedSongs){likedSongs=data.likedSongs;localStorage.setItem('zz_liked',J
 if(data.writing!==undefined){localStorage.setItem('zz_w',data.writing)}
 restoreSettings();
 showToast('设置已导入 ✨');
+}catch(err){showToast('导入失败：文件格式错误')}
+};r.readAsText(input.files[0]);input.value='';
+}
+
+/* 导出记忆 */
+function exportMemories(){
+var memories=JSON.parse(localStorage.getItem('zz_memories')||'[]');
+if(!memories.length){showToast('还没有记忆');return}
+var blob=new Blob([JSON.stringify(memories,null,2)],{type:'application/json'});
+var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+a.download='zz_memories_'+new Date().toISOString().slice(0,10)+'.json';
+a.click();URL.revokeObjectURL(a.href);
+showToast('记忆已导出 📤');
+}
+
+/* 导入记忆 */
+function importMemories(input){
+if(!input.files[0])return;
+var r=new FileReader();r.onload=function(e){
+try{
+var data=JSON.parse(e.target.result);
+if(!Array.isArray(data)){showToast('格式错误：需要JSON数组');return}
+var existing=JSON.parse(localStorage.getItem('zz_memories')||'[]');
+var count=0;
+data.forEach(function(m){
+if(m.text){
+existing.push({
+text:m.text,
+date:m.date||new Date().toISOString(),
+from:m.from||'导入',
+frame:m.frame||7
+});
+count++;
+}
+});
+localStorage.setItem('zz_memories',JSON.stringify(existing));
+showToast('导入成功：'+count+'条记忆 ✨');
+if(typeof renderMemories==='function')renderMemories();
 }catch(err){showToast('导入失败：文件格式错误')}
 };r.readAsText(input.files[0]);input.value='';
 }
