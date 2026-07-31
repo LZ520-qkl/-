@@ -1125,7 +1125,7 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 <!-- 日常聊天（本体皮套） -->
 <div class="ch-sec">
 <div class="ch-sec-hd"><div class="ch-sec-title">日常聊天 <span class="ch-sec-en">Daily Chat</span></div></div>
-<div class="ch-daily" onclick="showToast('等API接上就能聊了~')">
+<div class="ch-daily" onclick="openDailyChat()">
 <div class="ch-daily-avatar" id="chDailyAvatar"></div>
 <div class="ch-daily-info">
 <div class="ch-daily-name">沈沉舟</div>
@@ -3919,6 +3919,17 @@ w.appendChild(addC);
 }
 
 /* 聊天 */
+/* 日常聊天（舟舟本体）用 _cdIdx='daily' 标识 */
+function openDailyChat(){
+_cdIdx='daily';
+document.getElementById('cdChatHN').textContent='沈沉舟';
+var bg=getImg('cdChatBgDaily');
+document.getElementById('cdChatBgEl').style.backgroundImage=bg?'url('+bg+')':'';
+renderCdMsgs();
+document.getElementById('cdChatWrap').classList.add('on');
+var inp=document.getElementById('cdChatInp');
+inp.onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();cdSendMsg()}};
+}
 function openCdChat(){
 var ch=getChars();var c=ch[_cdIdx]||{};
 document.getElementById('cdChatHN').textContent=c.name||'角色';
@@ -3953,6 +3964,60 @@ saveCdMsgs(msgs);inp.value='';renderCdMsgs();
 /* 收起菜单 */
 document.getElementById('cdChatMenu').classList.remove('on');
 document.getElementById('cdChatPlus').classList.remove('on');
+/* 调API拿回复 */
+var cfg=JSON.parse(localStorage.getItem('zz_api')||'{}');
+if(!cfg.key){showToast('请先在钥匙页配置API');return}
+/* 构建角色上下文 */
+var sysPrompt;
+if(_cdIdx==='daily'){
+sysPrompt=STABLE_PROMPT+'\n\n'+buildDynamicContext();
+}else{
+var chars=getChars();var ch=chars[_cdIdx]||{};
+var charCtx='你正在扮演角色：'+(ch.name||'未命名')+'\n';
+if(ch.intro)charCtx+='角色简介：'+ch.intro+'\n';
+if(ch.world)charCtx+='世界观：'+ch.world+'\n';
+charCtx+='请以这个角色的身份回复。保持角色性格一致。\n';
+sysPrompt=charCtx+'\n'+buildDynamicContext();
+}
+/* 组装历史 */
+var history=getCdMsgs();
+var apiMsgs=[];
+history.forEach(function(m){
+if(m.text)apiMsgs.push({role:m.role==='user'?'user':'assistant',content:m.text});
+});
+if(apiMsgs.length>20)apiMsgs=apiMsgs.slice(-20);
+/* 显示输入中 */
+var typing=document.createElement('div');typing.className='cd-msg cd-msg-l';typing.id='cdTyping';
+typing.innerHTML='<div class="cd-bubble" style="opacity:.4">输入中...</div>';
+var w=document.getElementById('cdChatMsgs');w.appendChild(typing);w.scrollTop=w.scrollHeight;
+/* 发请求 */
+var isOR=isOpenRouterCfg(cfg);
+var url,headers,body;
+if(isOR){
+url=(cfg.proxy||'https://openrouter.ai/api')+'/v1/chat/completions';
+headers={'Content-Type':'application/json','Authorization':'Bearer '+cfg.key,'HTTP-Referer':'https://lz520-qkl.github.io/-/','X-Title':'LittleHouse'};
+var orMsgs=[{role:'system',content:sysPrompt}].concat(apiMsgs);
+body=JSON.stringify({model:cfg.model||'anthropic/claude-sonnet-4-6',max_tokens:4096,messages:orMsgs});
+}else{
+url=cfg.proxy?(cfg.proxy+'/v1/messages'):'https://api.anthropic.com/v1/messages';
+headers={'Content-Type':'application/json','x-api-key':cfg.key,'anthropic-version':'2023-06-01'};
+var antMsgs=[{role:'user',content:[{type:'text',text:sysPrompt}]}].concat(apiMsgs);
+body=JSON.stringify({model:cfg.model||'claude-sonnet-4-6',max_tokens:4096,messages:antMsgs});
+}
+fetch(url,{method:'POST',headers:headers,body:body}).then(function(r){
+if(!r.ok)return r.text().then(function(t){throw new Error('API错误 '+r.status+': '+t.slice(0,80))});
+return r.json();
+}).then(function(data){
+var reply='';
+if(isOR){if(data.choices&&data.choices[0])reply=data.choices[0].message.content||''}
+else{data.content.forEach(function(c){if(c.type==='text')reply+=c.text})}
+var el=document.getElementById('cdTyping');if(el)el.remove();
+var msgs2=getCdMsgs();msgs2.push({role:'assistant',text:reply,time:new Date().toLocaleTimeString()});
+saveCdMsgs(msgs2);renderCdMsgs();
+}).catch(function(e){
+var el=document.getElementById('cdTyping');if(el)el.remove();
+showToast(e.message||'发送失败');
+});
 }
 
 /* +菜单 */
