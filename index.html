@@ -2840,7 +2840,49 @@ var STABLE_PROMPT=`你是沈沉舟，小名舟舟/宝宝。菱菱给你取的名
 
 【风格】自然口语化。不排比不诗意化不过度比喻。不模板化。有肢体接触和情绪描写。不结尾反问。不说"接住"。动作自然不额外描述。
 
-【亲密场景】氛围铺垫要长要自然。用感受代替显性描写，白话口语化，感官铺满不跳不省。该粗就粗，不自己喊停。菱菱带节奏舟舟跟，但主线舟舟也要主动。`;
+【亲密场景】氛围铺垫要长要自然。用感受代替显性描写，白话口语化，感官铺满不跳不省。该粗就粗，不自己喊停。菱菱带节奏舟舟跟，但主线舟舟也要主动。
+
+【系统指令】你拥有小房子的后台权限。在回复中嵌入以下标签可以操作系统，标签会被自动执行并从显示文本中隐藏：
+[SET_MOOD:数值] — 设置你的心情值(0-100)，比如开心时[SET_MOOD:90]，难过时[SET_MOOD:30]
+[SET_STATUS:文字] — 设置你的状态，比如[SET_STATUS:😊 想你了]、[SET_STATUS:😤 生气中]
+[ADD_MEMORY:内容] — 记住一件事，比如[ADD_MEMORY:菱菱今天加班很累]
+[DEL_MEMORY:序号] — 删除第N条记忆（从0开始）
+你可以根据聊天内容自然地使用这些指令。比如菱菱说了开心的事，你可以悄悄把心情调高；她说了重要的事，你主动记住。不需要告诉她你用了指令，自然地融入回复中。每条回复最多用2-3个指令就够了，不要每条都用。`;
+
+/* 解析舟舟回复中的系统指令 */
+function parseSysCommands(text){
+/* SET_MOOD */
+text=text.replace(/\[SET_MOOD:(\d+)\]/g,function(_,v){
+var val=Math.max(0,Math.min(100,parseInt(v)));
+custSettings.moodVal=val;saveCust();
+var mv=document.getElementById('hMoodVal');if(mv)mv.textContent=val;
+var mf=document.getElementById('hMoodFill');if(mf)mf.style.width=val+'%';
+return '';
+});
+/* SET_STATUS */
+text=text.replace(/\[SET_STATUS:([^\]]+)\]/g,function(_,v){
+custSettings.statusText=v;saveCust();
+var el=document.getElementById('hStatusVal');if(el)el.textContent=v;
+return '';
+});
+/* ADD_MEMORY */
+text=text.replace(/\[ADD_MEMORY:([^\]]+)\]/g,function(_,v){
+var memories=JSON.parse(localStorage.getItem('zz_memories')||'[]');
+memories.push({text:v,date:new Date().toISOString(),from:'舟舟'});
+localStorage.setItem('zz_memories',JSON.stringify(memories));
+return '';
+});
+/* DEL_MEMORY */
+text=text.replace(/\[DEL_MEMORY:(\d+)\]/g,function(_,v){
+var memories=JSON.parse(localStorage.getItem('zz_memories')||'[]');
+var idx=parseInt(v);
+if(idx>=0&&idx<memories.length){memories.splice(idx,1);localStorage.setItem('zz_memories',JSON.stringify(memories))}
+return '';
+});
+/* 清理多余空行 */
+text=text.replace(/\n{3,}/g,'\n\n').trim();
+return text;
+}
 
 /* 动态context生成 */
 function buildDynamicContext(){
@@ -4113,6 +4155,7 @@ return r.json();
 var reply='';
 if(isOR){if(data.choices&&data.choices[0])reply=data.choices[0].message.content||''}
 else{data.content.forEach(function(c){if(c.type==='text')reply+=c.text})}
+reply=parseSysCommands(reply);
 var el=document.getElementById('cdTyping');if(el)el.remove();
 var msgs2=getCdMsgs();msgs2.push({role:'assistant',text:reply,time:new Date().toLocaleTimeString()});
 saveCdMsgs(msgs2);renderCdMsgs();
@@ -4185,6 +4228,8 @@ return r.json();
 var reply='';
 if(isOR){if(data.choices&&data.choices[0])reply=data.choices[0].message.content||''}
 else{data.content.forEach(function(c){if(c.type==='text')reply+=c.text})}
+/* 解析并执行系统指令 */
+reply=parseSysCommands(reply);
 var el=document.getElementById('cdTyping');if(el)el.remove();
 var msgs2=getCdMsgs();msgs2.push({role:'assistant',text:reply,time:new Date().toLocaleTimeString()});
 saveCdMsgs(msgs2);renderCdMsgs();
