@@ -2561,11 +2561,18 @@ var cb=document.getElementById('cdChatBgEl');
 if(cb)cb.style.backgroundImage=data?'url('+data+')':'';
 }else if(key.match(/^cdGal\d+_\d+$/)){
 renderCdGal();
+}else if(key==='chatUserAvatar'){
+/* 聊天用户头像更新后重新渲染 */
+if(typeof renderCdMsgs==='function')renderCdMsgs();
+}else if(key==='cdChatBgDefault'){
+/* 默认聊天背景 */
+var cb=document.getElementById('cdChatBgEl');
+if(cb)cb.style.backgroundImage=data?'url('+data+')':'';
 }
 }
 
 function restoreImgs(){
-['avatar','p0','p1','p2','p3','p4','musBg','chHero','chAvatar','chSbChar','chWorld','chCard0','chCard1','chCard2','chGcard0','chGcard1','chGcard2'].forEach(function(key){
+['avatar','p0','p1','p2','p3','p4','musBg','chHero','chAvatar','chSbChar','chWorld','chCard0','chCard1','chCard2','chGcard0','chGcard1','chGcard2','cdChatBgDefault'].forEach(function(key){
 var data=getImg(key);
 if(data)applyImg(key,data);
 });
@@ -4031,23 +4038,10 @@ var av=document.createElement('div');av.className='cd-msg-avatar';
 var avImg=document.createElement('img');
 avImg.src=(m.role==='user')?(userAvatar||defaultUser):(aiAvatar||defaultAi);
 av.appendChild(avImg);
-/* 用户头像：点击换图 */
+/* 用户头像：点击走openImgPicker，可裁剪可删除 */
 if(m.role==='user'){
 av.style.cursor='pointer';
-av.onclick=function(){
-var gi=document.getElementById('globalImgInput');
-gi.onchange=function(){
-if(!gi.files||!gi.files[0])return;
-var rd=new FileReader();rd.onload=function(ev){
-var img2=new Image();img2.onload=function(){
-var cv=document.createElement('canvas');var sz=200;cv.width=sz;cv.height=sz;
-var ctx=cv.getContext('2d');var s=Math.min(img2.width,img2.height);
-ctx.drawImage(img2,(img2.width-s)/2,(img2.height-s)/2,s,s,0,0,sz,sz);
-setImg('chatUserAvatar',cv.toDataURL('image/jpeg',0.7));
-renderCdMsgs();
-};img2.src=ev.target.result;};rd.readAsDataURL(gi.files[0]);gi.value='';
-};gi.click();
-};
+av.onclick=function(){openImgPicker('chatUserAvatar','circle')};
 }
 d.appendChild(av);
 /* 内容 */
