@@ -1176,7 +1176,13 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 <div style="height:20px"></div>
 </div>
 </div>
-<div class="page" id="p2" style="position:relative"><div class="page-bg-img" id="p2Bg"></div><div class="page-bg-add" onclick="openImgPicker('p2','rect')">+</div><div class="placeholder-page" style="position:relative;z-index:1"><div class="placeholder-icon">🧠</div><div class="placeholder-title">记忆管理</div><div class="placeholder-desc">等待API接入</div></div></div>
+<div class="page" id="p2" style="position:relative"><div class="page-bg-img" id="p2Bg"></div><div class="page-bg-add" onclick="openImgPicker('p2','rect')">+</div>
+<div style="position:relative;z-index:1;padding:20px 16px;padding-top:max(50px,env(safe-area-inset-top))">
+<div style="text-align:center;margin-bottom:20px"><div style="font-size:20px;font-weight:300;color:var(--white)">🧠 记忆管理</div><div style="font-size:10px;color:var(--text3);margin-top:4px">Memory</div></div>
+<div style="margin-bottom:12px"><button type="button" class="cust-btn cust-btn-accent" onclick="addMemory()" style="width:100%">+ 添加记忆</button></div>
+<div id="memList" style="display:flex;flex-direction:column;gap:8px"></div>
+<div style="text-align:center;margin-top:20px;font-size:9px;color:var(--text3)">记忆会随聊天自动积累，也可以手动添加</div>
+</div></div>
 <div class="page" id="p3" style="position:relative;background:var(--bg2)"><div class="page-bg-img" id="p3Bg"></div><div class="house-page" style="position:relative;z-index:1;background:transparent">
 <div class="house-search"><span>🔍</span><input type="text" id="houseSearchInput" placeholder="搜索小房子..." oninput="doHouseSearch(this.value)" onfocus="doHouseSearch(this.value)" onblur="setTimeout(function(){document.getElementById('searchResults').classList.remove('on')},200)"><div class="search-results" id="searchResults"></div></div>
 <div class="tag-bar"><div class="tag-heart" onclick="tagPrev()">✦</div><div class="tag-scroll" id="tagScroll"><div class="tag-item on" data-tag="box">百宝箱</div><div class="tag-item" data-tag="bh">黑历史</div><div class="tag-item" data-tag="story">番外</div><div class="tag-item" data-tag="wrt">写作区</div><div class="tag-item" data-tag="mus">音乐区</div><div class="tag-item" data-tag="pho">相册墙</div><div class="tag-item" data-tag="play">娱乐区</div><div class="tag-item" data-tag="bed">舟舟的房间</div><div class="tag-item" data-tag="kit">投喂区</div><div class="tag-item" data-tag="msg">留言板</div></div><div class="tag-heart" onclick="tagNext()">✦</div></div>
@@ -1490,15 +1496,15 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 </div>
 <div class="cust-color-row">
 <div class="cust-color-label">卡片颜色</div>
-<input type="color" class="cust-color-input" id="c_cardColor" value="#162a36" onchange="onColor('cardColor',this.value)">
+<input type="color" class="cust-color-input" id="c_cardColor" value="#162a36" oninput="onColor('cardColor',this.value)" onchange="onColor('cardColor',this.value)">
 </div>
 <div class="cust-color-row">
 <div class="cust-color-label">按钮颜色</div>
-<input type="color" class="cust-color-input" id="c_btnColor" value="#7a1028" onchange="onColor('btnColor',this.value)">
+<input type="color" class="cust-color-input" id="c_btnColor" value="#7a1028" oninput="onColor('btnColor',this.value)" onchange="onColor('btnColor',this.value)">
 </div>
 <div class="cust-color-row">
 <div class="cust-color-label">玻璃高光颜色</div>
-<input type="color" class="cust-color-input" id="c_glassHighlight" value="#87ADC6" onchange="onColor('glassHighlight',this.value)">
+<input type="color" class="cust-color-input" id="c_glassHighlight" value="#87ADC6" oninput="onColor('glassHighlight',this.value)" onchange="onColor('glassHighlight',this.value)">
 </div>
 <div class="cust-slider-row">
 <div class="cust-slider-label">阴影强度</div>
@@ -1662,32 +1668,32 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 <div class="cust-sec-body">
 <div class="cust-color-row">
 <div class="cust-color-label">全局字体颜色</div>
-<input type="color" class="cust-color-input" id="c_fontGlobal" value="#F0FBFA" onchange="onColor('fontGlobal',this.value)">
+<input type="color" class="cust-color-input" id="c_fontGlobal" value="#F0FBFA" oninput="onColor('fontGlobal',this.value)" onchange="onColor('fontGlobal',this.value)">
 </div>
 <div style="font-size:10px;color:rgba(200,220,240,.2);font-weight:200;margin:8px 0 4px">首页</div>
 <div class="cust-color-row">
 <div class="cust-color-label">时间颜色</div>
-<input type="color" class="cust-color-input" id="c_clrTime" value="#F0FBFA" onchange="onColor('clrTime',this.value)">
+<input type="color" class="cust-color-input" id="c_clrTime" value="#F0FBFA" oninput="onColor('clrTime',this.value)" onchange="onColor('clrTime',this.value)">
 </div>
 <div class="cust-color-row">
 <div class="cust-color-label">心情/状态颜色</div>
-<input type="color" class="cust-color-input" id="c_clrMood" value="#F0FBFA" onchange="onColor('clrMood',this.value)">
+<input type="color" class="cust-color-input" id="c_clrMood" value="#F0FBFA" oninput="onColor('clrMood',this.value)" onchange="onColor('clrMood',this.value)">
 </div>
 <div class="cust-color-row">
 <div class="cust-color-label">签名颜色</div>
-<input type="color" class="cust-color-input" id="c_clrSig" value="#CBE4ED" onchange="onColor('clrSig',this.value)">
+<input type="color" class="cust-color-input" id="c_clrSig" value="#CBE4ED" oninput="onColor('clrSig',this.value)" onchange="onColor('clrSig',this.value)">
 </div>
 <div class="cust-color-row">
 <div class="cust-color-label">聊天字体颜色</div>
-<input type="color" class="cust-color-input" id="c_clrChat" value="#F0FBFA" onchange="onColor('clrChat',this.value)">
+<input type="color" class="cust-color-input" id="c_clrChat" value="#F0FBFA" oninput="onColor('clrChat',this.value)" onchange="onColor('clrChat',this.value)">
 </div>
 <div class="cust-color-row">
 <div class="cust-color-label">提示文字颜色</div>
-<input type="color" class="cust-color-input" id="c_clrPlaceholder" value="#4a6a7a" onchange="onColor('clrPlaceholder',this.value)">
+<input type="color" class="cust-color-input" id="c_clrPlaceholder" value="#4a6a7a" oninput="onColor('clrPlaceholder',this.value)" onchange="onColor('clrPlaceholder',this.value)">
 </div>
 <div class="cust-color-row">
 <div class="cust-color-label">金色装饰色</div>
-<input type="color" class="cust-color-input" id="c_clrGold" value="#c8b478" onchange="onGoldColor(this.value)">
+<input type="color" class="cust-color-input" id="c_clrGold" value="#c8b478" oninput="onGoldColor(this.value)" onchange="onGoldColor(this.value)">
 </div>
 </div>
 </div>
@@ -1947,7 +1953,7 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 </div>
 <div class="cust-color-row">
 <div class="cust-color-label">歌词颜色</div>
-<input type="color" class="cust-color-input" id="c_lyricColor" value="#CBE4ED" onchange="onColor('lyricColor',this.value)">
+<input type="color" class="cust-color-input" id="c_lyricColor" value="#CBE4ED" oninput="onColor('lyricColor',this.value)" onchange="onColor('lyricColor',this.value)">
 </div>
 </div>
 </div>
@@ -2905,12 +2911,45 @@ if(onDone)onDone(reply,u);
 
 /* 记忆管理 */
 function addMemory(text){
+if(!text){
+/* 手动添加 */
+var d=document.createElement('div');d.style.cssText='position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:20px';
+d.innerHTML='<div style="background:var(--dark1);border:1px solid var(--cardb);border-radius:14px;padding:20px;width:100%;max-width:300px"><div style="font-size:13px;color:var(--white);margin-bottom:10px">添加一条记忆</div><textarea id="memInput" style="width:100%;height:80px;background:var(--dark2);color:var(--white);border:1px solid var(--cardb);border-radius:8px;padding:8px;font-size:12px;font-family:inherit;resize:none" placeholder="写下想记住的事..."></textarea><div style="display:flex;gap:8px;margin-top:10px"><button type="button" style="flex:1;padding:8px;border-radius:8px;background:var(--dark2);border:1px solid var(--cardb);color:var(--text2);font-family:inherit;font-size:12px" onclick="this.closest(\'div[style*=fixed]\').remove()">取消</button><button type="button" style="flex:1;padding:8px;border-radius:8px;background:var(--accent);border:none;color:var(--white);font-family:inherit;font-size:12px" onclick="saveNewMemory(this)">保存</button></div></div>';
+document.body.appendChild(d);
+return;
+}
 var memories=JSON.parse(localStorage.getItem('zz_memories')||'[]');
 var now=new Date();
 memories.push({text:text,date:now.toISOString(),frame:7});
 localStorage.setItem('zz_memories',JSON.stringify(memories));
+renderMemories();
+}
+function saveNewMemory(btn){
+var txt=document.getElementById('memInput').value.trim();
+if(!txt){showToast('写点什么吧');return}
+addMemory(txt);
+btn.closest('div[style*=fixed]').remove();
 }
 function getMemories(){return JSON.parse(localStorage.getItem('zz_memories')||'[]')}
+function deleteMemory(idx){
+var memories=JSON.parse(localStorage.getItem('zz_memories')||'[]');
+memories.splice(idx,1);
+localStorage.setItem('zz_memories',JSON.stringify(memories));
+renderMemories();
+}
+function renderMemories(){
+var list=document.getElementById('memList');if(!list)return;
+var memories=getMemories();
+if(!memories.length){list.innerHTML='<div style="text-align:center;padding:30px 0;font-size:11px;color:var(--text3)">还没有记忆</div>';return}
+list.innerHTML='';
+memories.forEach(function(m,i){
+var d=document.createElement('div');
+d.style.cssText='background:var(--card);border:1px solid var(--cardb);border-radius:10px;padding:12px;position:relative';
+var date=new Date(m.date);var ds=date.getMonth()+1+'/'+date.getDate()+' '+date.getHours()+':'+String(date.getMinutes()).padStart(2,'0');
+d.innerHTML='<div style="font-size:12px;color:var(--white);line-height:1.5;margin-bottom:6px">'+m.text.replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</div><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:9px;color:var(--text3)">'+ds+'</span><button type="button" style="font-size:9px;color:var(--text3);background:none;border:none;font-family:inherit" onclick="deleteMemory('+i+')">删除</button></div>';
+list.appendChild(d);
+});
+}
 
 function addMemoryFromInput(){
 var ta=document.getElementById('memAddTa');
@@ -4246,6 +4285,7 @@ var ac=document.getElementById('ambCanvas');
 var aw=document.getElementById('ambientWrap');
 if(ac&&aw){setTimeout(function(){ac.width=aw.clientWidth||window.innerWidth;ac.height=aw.clientHeight||window.innerHeight},50)}
 }
+if(n===2){renderMemories()}
 }
 document.getElementById('homeNav').addEventListener('click',function(e){e.stopPropagation();if(curTab===0)switchTab(3);else if(curTab===3)switchTab(0);else switchTab(0)});
 
@@ -5120,11 +5160,25 @@ if(bgEl)bgEl.style.opacity=val/100;
 document.querySelectorAll('.page-bg-img').forEach(function(el){el.style.opacity=val/100});
 break;
 case 'fontSize':
-document.body.style.fontSize=val+'px';break;
+document.documentElement.style.setProperty('--font-base',val+'px');
+document.body.style.fontSize=val+'px';
+break;
 case 'glassAlpha':
+var cc=custSettings.clr_cardColor||'#162a36';
+var r=parseInt(cc.slice(1,3),16),g=parseInt(cc.slice(3,5),16),b=parseInt(cc.slice(5,7),16);
+var a=val/100;
+document.documentElement.style.setProperty('--card','rgba('+r+','+g+','+b+','+a+')');
+document.documentElement.style.setProperty('--dark1','rgba('+r+','+g+','+b+','+(a*.9)+')');
+document.documentElement.style.setProperty('--dark2','rgba('+r+','+g+','+b+','+(a*.5)+')');
+document.documentElement.style.setProperty('--dark3','rgba('+r+','+g+','+b+','+(a*.7)+')');
+document.documentElement.style.setProperty('--glass','rgba('+r+','+g+','+b+','+(a*.35)+')');
+break;
 case 'glassBorder':
-/* 直接刷新主题，让applyTheme统一重算所有变量 */
-applyTheme(custSettings.theme||'default');
+var gb=val/100;
+document.documentElement.style.setProperty('--cardb','rgba(255,255,255,'+gb*0.06+')');
+document.querySelectorAll('.h-cal,.navbar,.cust-section,.house-main,.h-st,.side-card,.ch-wthr,.ch-hero-quote,.cd-sec,.cd-entry,.cd-chat-head,.cc-card,.cl-item').forEach(function(el){
+el.style.borderColor='rgba(255,255,255,'+(gb*0.15)+')';
+});
 break;
 case 'glassBlur':
 document.querySelectorAll('.h-cal,.navbar,.cust-section,.house-main,.h-st,.side-card,.ch-wthr,.ch-hero-quote,.cd-sec,.cd-entry,.cd-chat-head,.cc-card,.cl-item,.sp-head').forEach(function(el){
@@ -5142,12 +5196,32 @@ case 'moodVal':
 var mv=document.getElementById('hMoodVal');if(mv)mv.textContent=val;
 var mf=document.getElementById('hMoodFill');if(mf)mf.style.width=val+'%';
 break;
-case 'chatAlpha':case 'chatAvatarSize':case 'chatGap':
-/* 聊天相关，API接入后生效 */
+case 'chatAlpha':
+/* 聊天消息区背景透明度 */
+var chatBg=document.getElementById('cdChatBgEl');
+if(chatBg)chatBg.style.opacity=val/100;
+break;
+case 'chatAvatarSize':
+/* 聊天头像大小 */
+var sz=val+'px';
+var style=document.getElementById('chatDynStyle');
+if(!style){style=document.createElement('style');style.id='chatDynStyle';document.head.appendChild(style)}
+var css='.cd-msg-avatar{width:'+sz+';height:'+sz+'}';
+if(custSettings.chatGap)css+='.cd-msg{margin-bottom:'+custSettings.chatGap+'px}';
+if(custSettings.ftUser)css+='.cd-msg-r .cd-bubble{font-size:'+custSettings.ftUser+'px}';
+if(custSettings.ftBot)css+='.cd-msg-l .cd-bubble{font-size:'+custSettings.ftBot+'px}';
+style.textContent=css;
+break;
+case 'chatGap':
+/* 聊天消息间距 */
+var style=document.getElementById('chatDynStyle');
+if(!style){style=document.createElement('style');style.id='chatDynStyle';document.head.appendChild(style)}
+var css='.cd-msg{margin-bottom:'+val+'px}';
+if(custSettings.chatAvatarSize)css+='.cd-msg-avatar{width:'+custSettings.chatAvatarSize+'px;height:'+custSettings.chatAvatarSize+'px}';
+style.textContent=css;
 break;
 case 'animSpeed':
 document.getElementById('v_animSpeed').textContent=val+'%';
-/* 100%=0.3s, 50%=0.15s, 200%=0.6s */
 if(custSettings.transition!==false){
 document.documentElement.style.setProperty('--anim-dur',(val/333)+'s');
 }
@@ -5172,8 +5246,18 @@ document.querySelectorAll('.mus-lyric-line').forEach(function(e){e.style.fontSiz
 break;
 case 'ftTime':case 'ftDate':case 'ftMood':case 'ftSig':case 'ftH1':case 'ftH2':case 'ftMenu':
 applyFontSizes();break;
-case 'ftUser':case 'ftBot':
-/* 聊天相关，API接入后 */break;
+case 'ftUser':
+/* 用户消息字体 */
+var style=document.getElementById('chatDynStyle');
+if(!style){style=document.createElement('style');style.id='chatDynStyle';document.head.appendChild(style)}
+style.textContent=(style.textContent||'').replace(/\.cd-msg-r .cd-bubble\{font-size:[^}]+\}/,'')+'.cd-msg-r .cd-bubble{font-size:'+val+'px}';
+break;
+case 'ftBot':
+/* 舟舟消息字体 */
+var style=document.getElementById('chatDynStyle');
+if(!style){style=document.createElement('style');style.id='chatDynStyle';document.head.appendChild(style)}
+style.textContent=(style.textContent||'').replace(/\.cd-msg-l .cd-bubble\{font-size:[^}]+\}/,'')+'.cd-msg-l .cd-bubble{font-size:'+val+'px}';
+break;
 case 'advShadow':
 document.documentElement.style.setProperty('--tshadow','0 1px '+val+'px rgba(0,0,0,.5)');break;
 }
@@ -5388,7 +5472,12 @@ break;
 case 'clrTime':var e=document.getElementById('hTime');if(e)e.style.color=val;break;
 case 'clrMood':document.querySelectorAll('.h-st-val').forEach(function(e){e.style.color=val});break;
 case 'clrSig':var e=document.querySelector('.h-sig');if(e)e.style.color=val;break;
-case 'clrChat':/* API接入后 */break;
+case 'clrChat':
+/* 聊天气泡文字颜色 */
+var style=document.getElementById('chatDynStyle');
+if(!style){style=document.createElement('style');style.id='chatDynStyle';document.head.appendChild(style)}
+style.textContent=(style.textContent||'')+'.cd-bubble{color:'+val+'!important}';
+break;
 case 'clrPlaceholder':
 var style=document.getElementById('placeholderStyle');
 if(!style){style=document.createElement('style');style.id='placeholderStyle';document.head.appendChild(style)}
