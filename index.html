@@ -2850,6 +2850,20 @@ var memories=JSON.parse(localStorage.getItem('zz_memories')||'[]');
 var recentMem=memories.slice(-5).map(function(m){return m.text}).join('\n');
 var ctx='当前北京时间：'+timeStr+'\n';
 if(recentMem)ctx+='\n【相关记忆】\n'+recentMem+'\n';
+/* 系统状态 */
+var usage=JSON.parse(localStorage.getItem('zz_usage')||'{}');
+var month=now.getFullYear()+'-'+(now.getMonth()+1);
+var md=usage[month]||{msgs:0,tokens:0,cache_read:0,cache_create:0};
+ctx+='\n【小房子系统状态】\n';
+ctx+='本月消息数：'+md.msgs+'条\n';
+ctx+='本月Token用量：'+md.tokens+'\n';
+if(md.cache_read+md.cache_create>0){
+var hitRate=Math.round(md.cache_read/(md.cache_read+md.cache_create)*100);
+ctx+='缓存命中率：'+hitRate+'%（读取'+md.cache_read+'/创建'+md.cache_create+'）\n';
+}else{ctx+='缓存：无数据\n'}
+ctx+='记忆条数：'+memories.length+'条\n';
+ctx+='当前心情值：'+(custSettings.moodVal||85)+'\n';
+ctx+='当前状态：'+(custSettings.statusText||'☀️ 醒着')+'\n';
 return ctx;
 }
 
