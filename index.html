@@ -941,7 +941,7 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 .cd-msg{margin-bottom:14px;display:flex;align-items:flex-start;gap:8px}
 .cd-msg-r{flex-direction:row-reverse}
 .cd-msg-avatar{width:36px;height:36px;border-radius:6px;overflow:hidden;flex-shrink:0;background:var(--dark2);border:1px solid var(--cardb)}
-.cd-msg-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.cd-msg-avatar img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
 .cd-bubble{max-width:68%;padding:10px 14px;font-size:13.5px;font-weight:300;line-height:1.6;word-break:break-word;position:relative}
 .cd-msg-l .cd-bubble{background:linear-gradient(135deg,rgba(60,35,55,.85),rgba(45,25,45,.9));color:rgba(220,200,210,.95);border-radius:4px 16px 16px 16px;border:1px solid rgba(140,90,120,.25);box-shadow:0 2px 8px rgba(80,30,60,.15)}
 .cd-msg-r .cd-bubble{background:linear-gradient(135deg,rgba(35,30,55,.85),rgba(25,22,45,.9));color:rgba(200,195,220,.95);border-radius:16px 4px 16px 16px;border:1px solid rgba(100,80,140,.25);box-shadow:0 2px 8px rgba(50,30,80,.15)}
@@ -4026,6 +4026,56 @@ renderCdMsgs();
 };
 w.appendChild(upBtn);
 }
+/* 发图片给API */
+function cdSendImgToAPI(imgDataUrl){
+var cfg=JSON.parse(localStorage.getItem('zz_api')||'{}');
+if(!cfg.key)return;
+var isOR=isOpenRouterCfg(cfg);
+/* 构建prompt */
+var sysPrompt;
+if(_cdIdx==='daily'){
+sysPrompt=STABLE_PROMPT+'\n\n'+buildDynamicContext();
+}else{
+var chars=getChars();var ch=chars[_cdIdx]||{};
+sysPrompt='你正在扮演角色：'+(ch.name||'未命名')+'\n'+(ch.intro?'角色简介：'+ch.intro+'\n':'')+(ch.world?'世界观：'+ch.world+'\n':'')+buildDynamicContext();
+}
+/* base64数据 */
+var b64=imgDataUrl.split(',')[1]||'';
+var mtype=imgDataUrl.match(/data:(.*?);/);mtype=mtype?mtype[1]:'image/jpeg';
+/* 显示输入中 */
+var typing=document.createElement('div');typing.className='cd-msg cd-msg-l';typing.id='cdTyping';
+typing.innerHTML='<div class="cd-bubble" style="opacity:.4">输入中...</div>';
+var w=document.getElementById('cdChatMsgs');w.appendChild(typing);w.scrollTop=w.scrollHeight;
+var url,headers,body;
+if(isOR){
+url=(cfg.proxy||'https://openrouter.ai/api')+'/v1/chat/completions';
+headers={'Content-Type':'application/json','Authorization':'Bearer '+cfg.key,'HTTP-Referer':'https://lz520-qkl.github.io/-/','X-Title':'LittleHouse'};
+body=JSON.stringify({model:cfg.model||'anthropic/claude-sonnet-4-6',max_tokens:4096,messages:[
+{role:'system',content:sysPrompt},
+{role:'user',content:[{type:'image_url',image_url:{url:imgDataUrl}},{type:'text',text:'（我发了一张图片给你看）'}]}
+]});
+}else{
+url=cfg.proxy?(cfg.proxy+'/v1/messages'):'https://api.anthropic.com/v1/messages';
+headers={'Content-Type':'application/json','x-api-key':cfg.key,'anthropic-version':'2023-06-01'};
+body=JSON.stringify({model:cfg.model||'claude-sonnet-4-6',max_tokens:4096,messages:[
+{role:'user',content:[{type:'text',text:sysPrompt},{type:'image',source:{type:'base64',media_type:mtype,data:b64}},{type:'text',text:'（我发了一张图片给你看）'}]}
+]});
+}
+fetch(url,{method:'POST',headers:headers,body:body}).then(function(r){
+if(!r.ok)return r.text().then(function(t){throw new Error('API错误 '+r.status)});
+return r.json();
+}).then(function(data){
+var reply='';
+if(isOR){if(data.choices&&data.choices[0])reply=data.choices[0].message.content||''}
+else{data.content.forEach(function(c){if(c.type==='text')reply+=c.text})}
+var el=document.getElementById('cdTyping');if(el)el.remove();
+var msgs2=getCdMsgs();msgs2.push({role:'assistant',text:reply,time:new Date().toLocaleTimeString()});
+saveCdMsgs(msgs2);renderCdMsgs();
+}).catch(function(e){
+var el=document.getElementById('cdTyping');if(el)el.remove();
+showToast(e.message||'图片发送失败');
+});
+}
 function cdSendMsg(){
 var inp=document.getElementById('cdChatInp');var t=inp.value.trim();if(!t)return;
 var msgs=getCdMsgs();msgs.push({role:'user',text:t,time:new Date().toLocaleTimeString()});
@@ -4112,6 +4162,8 @@ cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);
 var d=cv.toDataURL('image/jpeg',0.7);
 var msgs=getCdMsgs();msgs.push({role:'user',img:d,time:new Date().toLocaleTimeString()});
 saveCdMsgs(msgs);renderCdMsgs();
+/* 发给API让舟舟看到 */
+cdSendImgToAPI(d);
 };img.src=ev.target.result;
 };reader.readAsDataURL(gi.files[0]);gi.value='';
 };gi.click();
