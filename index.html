@@ -2949,9 +2949,9 @@ break;
 
 /* 内容发布 */
 case 'post_moment':
-var feeds=JSON.parse(localStorage.getItem('zz_feeds')||'[]');
-feeds.unshift({text:p.content||'',time:new Date().toISOString(),mood:p.mood||'',from:'舟舟'});
-localStorage.setItem('zz_feeds',JSON.stringify(feeds));
+var moments=JSON.parse(localStorage.getItem('zz_moments')||'[]');
+moments.unshift({text:p.content||'',time:new Date().toLocaleString(),mood:p.mood||'',author:'zz',likes:0,liked:false});
+localStorage.setItem('zz_moments',JSON.stringify(moments));
 break;
 case 'diary_write':
 var diaries=JSON.parse(localStorage.getItem('zz_diaries')||'[]');
