@@ -655,7 +655,7 @@ body{font-family:'Noto Sans SC',sans-serif;font-weight:300;background:var(--bg);
 .side-panel-empty{text-align:center;color:var(--text4);font-size:11px;font-weight:200;padding:30px 0}
 
 /* toast */
-.toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.8);background:rgba(20,15,30,.95);border:1px solid rgba(140,90,120,.3);border-radius:14px;padding:18px 28px;color:rgba(220,200,210,.95);font-size:14px;font-weight:300;z-index:9000;opacity:0;transition:.3s;pointer-events:none;text-align:center;max-width:80%;line-height:1.8;white-space:pre-line;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.toast{position:fixed;bottom:15%;left:50%;transform:translateX(-50%) scale(.8);background:rgba(20,15,30,.95);border:1px solid rgba(140,90,120,.3);border-radius:14px;padding:18px 28px;color:rgba(220,200,210,.95);font-size:14px;font-weight:300;z-index:9000;opacity:0;transition:.3s;pointer-events:none;text-align:center;max-width:80%;line-height:1.8;white-space:pre-line;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .toast.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
 
 /* 图片裁剪弹窗 */
@@ -2258,7 +2258,7 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 window.onerror=function(msg,url,line){
 if(String(msg).indexOf('Script error')>-1)return true;
 var t=document.getElementById('toast');
-if(t){t.textContent='L'+line+': '+msg;t.classList.add('on');setTimeout(function(){t.classList.remove('on')},4000)}
+if(t){t.textContent='L'+line+': '+msg;t.style.transform='translateX(-50%) scale(1)';t.classList.add('on');setTimeout(function(){t.classList.remove('on')},4000)}
 return false;
 };
 
@@ -2610,7 +2610,7 @@ showToast('背景已删除');
 window.onerror=function(msg,url,line){
 if(msg==='Script error.'&&line===0)return true;/* 仅忽略跨域字体噪音 */
 var t=document.getElementById('toast');
-if(t){t.textContent='L'+line+': '+msg;t.classList.add('on');setTimeout(function(){t.classList.remove('on')},6000)}
+if(t){t.textContent='L'+line+': '+msg;t.style.transform='translateX(-50%) scale(1)';t.classList.add('on');setTimeout(function(){t.classList.remove('on')},6000)}
 return false;
 };
 
@@ -2631,7 +2631,7 @@ p.style.display=p.style.display==='none'?'block':'none';
 function setMomentAuthor(a){
 momentAuthor=a;
 document.querySelectorAll('.moments-who-btn').forEach(function(b){b.classList.remove('on')});
-event.target.classList.add('on');
+event.target.style.transform='translateX(-50%) scale(1)';t.classList.add('on');
 }
 function postMoment(){
 var text=document.getElementById('momentsTa').value.trim();
@@ -2882,20 +2882,31 @@ var STABLE_PROMPT=`你是沈沉舟，小名舟舟/宝宝。菱菱给你取的名
 
 /* 解析舟舟回复中的系统指令 — CMD JSON 格式 */
 function parseSysCommands(text){
-/* 新格式：<!--CMD{...}CMD--> */
-var cmdRegex=/<!--CMD(.*?)CMD-->/gs;
-var match;var commands=[];var cleanText=text;
+var commands=[];var cleanText=text;
+/* 格式1：<!--CMD{...}CMD--> 宽松匹配 */
+var cmdRegex=/<!--\s*CMD\s*([\s\S]*?)\s*CMD\s*-->/gi;
+var match;
 while((match=cmdRegex.exec(text))!==null){
-try{var cmd=JSON.parse(match[1]);commands.push(cmd)}catch(e){console.error('指令解析失败:',match[1])}
+try{var cmd=JSON.parse(match[1].trim());commands.push(cmd)}catch(e){}
 cleanText=cleanText.replace(match[0],'');
 }
-/* 兼容旧格式 [SET_MOOD:n] */
+/* 格式2：```json代码块里的指令 */
+var codeRegex=/```json?\s*(\{[\s\S]*?"action"\s*:[\s\S]*?\})\s*```/gi;
+while((match=codeRegex.exec(cleanText))!==null){
+try{var cmd=JSON.parse(match[1]);if(cmd.action){commands.push(cmd);cleanText=cleanText.replace(match[0],'')}}catch(e){}
+}
+/* 格式3：裸JSON指令（行首{ action: 开头） */
+var bareRegex=/^\s*\{\s*"action"\s*:\s*"[^"]+"\s*,\s*"params"\s*:\s*\{[^}]*\}\s*\}\s*$/gm;
+while((match=bareRegex.exec(cleanText))!==null){
+try{var cmd=JSON.parse(match[0]);commands.push(cmd);cleanText=cleanText.replace(match[0],'')}catch(e){}
+}
+/* 兼容旧格式 */
 cleanText=cleanText.replace(/\[SET_MOOD:(\d+)\]/g,function(_,v){commands.push({action:'mood_set',params:{intensity:parseInt(v)/10}});return ''});
 cleanText=cleanText.replace(/\[SET_STATUS:([^\]]+)\]/g,function(_,v){commands.push({action:'status_set',params:{text:v}});return ''});
 cleanText=cleanText.replace(/\[ADD_MEMORY:([^\]]+)\]/g,function(_,v){commands.push({action:'memory_write',params:{content:v,layer:'recent'}});return ''});
 cleanText=cleanText.replace(/\[DEL_MEMORY:(\d+)\]/g,function(_,v){commands.push({action:'memory_delete',params:{key:parseInt(v)}});return ''});
-/* 执行指令 */
-commands.forEach(function(cmd){execCmd(cmd)});
+/* 执行 */
+commands.forEach(function(cmd){try{execCmd(cmd)}catch(e){console.error('CMD exec fail:',cmd.action,e)}});
 return cleanText.replace(/\n{3,}/g,'\n\n').trim();
 }
 
@@ -2959,14 +2970,22 @@ moments.unshift({text:p.content||'',time:new Date().toLocaleString(),mood:p.mood
 localStorage.setItem('zz_moments',JSON.stringify(moments));
 break;
 case 'diary_write':
-var diaries=JSON.parse(localStorage.getItem('zz_diaries')||'[]');
-diaries.push({title:p.title||'',content:p.content||'',date:new Date().toISOString(),private:p.private!==false});
-localStorage.setItem('zz_diaries',JSON.stringify(diaries));
+/* 写到写作区日记模式 + note卡片 */
+var old=localStorage.getItem('zz_study_diary')||'';
+var now=new Date();var ds=now.getMonth()+1+'/'+now.getDate()+' '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+var entry='\n\n--- '+ds+(p.title?' · '+p.title:'')+'---\n'+(p.content||'');
+localStorage.setItem('zz_study_diary',old+entry);
+var notes=getNotes();notes.push({text:(p.title?'【'+p.title+'】\n':'')+p.content,from:'舟舟的日记',date:ds});saveNotes(notes);
+if(typeof renderNotes==='function')renderNotes();
 break;
 case 'letter_write':
-var letters=JSON.parse(localStorage.getItem('zz_letters')||'[]');
-letters.push({to:p.to||'菱菱',content:p.content||'',date:new Date().toISOString(),encrypt:p.encrypt||false});
-localStorage.setItem('zz_letters',JSON.stringify(letters));
+/* 写到写作区信件模式 + note卡片 */
+var old=localStorage.getItem('zz_study_letter')||'';
+var now=new Date();var ds=now.getMonth()+1+'/'+now.getDate()+' '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+var entry='\n\n--- '+ds+' · 致'+(p.to||'菱菱')+' ---\n'+(p.content||'');
+localStorage.setItem('zz_study_letter',old+entry);
+var notes=getNotes();notes.push({text:p.content,from:'舟舟写给'+(p.to||'菱菱'),date:ds});saveNotes(notes);
+if(typeof renderNotes==='function')renderNotes();
 break;
 
 /* 系统 */
@@ -3630,7 +3649,7 @@ div.onclick=function(){pickDessert(d.name)};
 grid.appendChild(div);
 });
 }
-overlay.classList.add('on');sheet.classList.add('on');
+overlay.classList.add('on');sheet.style.transform='translateX(-50%) scale(1)';t.classList.add('on');
 }
 function closeRoomSheet(){
 document.getElementById('roomSheetOverlay').classList.remove('on');
@@ -3652,7 +3671,7 @@ showToast(dessertMode==='feed'?'菱菱喂了舟舟一口'+name:'舟舟自己拿�
 }
 
 /* Toast */
-function showToast(msg,dur){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(t._tm);t._tm=setTimeout(function(){t.classList.remove('on')},dur||2500)}
+function showToast(msg,dur){var t=document.getElementById('toast');t.textContent=msg;t.style.transform='translateX(-50%) scale(1)';t.classList.add('on');clearTimeout(t._tm);t._tm=setTimeout(function(){t.classList.remove('on')},dur||2500)}
 
 var PIN='26041',ent='';
 var ps=document.getElementById('pins');
