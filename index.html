@@ -1017,7 +1017,15 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 <div class="quota-label">记忆条数</div>
 <div class="quota-val" id="quotaMemCount">--</div>
 </div>
-<div class="quota-note">API接入后自动记录使用情况</div>
+<div class="quota-note">数据实时记录中</div>
+<div class="quota-card">
+<div class="quota-label">今日对话</div>
+<div class="quota-val" id="quotaTodayMsgs">0条</div>
+</div>
+<div class="quota-card">
+<div class="quota-label">今日Token消耗</div>
+<div class="quota-val" id="quotaTodayTokens">0</div>
+</div>
 </div>
 </div>
 
@@ -2694,6 +2702,13 @@ document.getElementById('quotaCacheHit').textContent=hitRate+'% · 读'+cacheRea
 /* 记忆条数 */
 var mems=JSON.parse(localStorage.getItem('zz_memories')||'[]');
 document.getElementById('quotaMemCount').textContent=mems.length+'条';
+/* 今日统计 */
+var logs=JSON.parse(localStorage.getItem('zz_usage_logs')||'[]');
+var todayStart=new Date();todayStart.setHours(0,0,0,0);
+var todayLogs=logs.filter(function(l){return l.time>=todayStart.getTime()});
+document.getElementById('quotaTodayMsgs').textContent=todayLogs.length+'条';
+var todayTokens=todayLogs.reduce(function(s,l){return s+(l.input||0)+(l.output||0)},0);
+document.getElementById('quotaTodayTokens').textContent=todayTokens>1000?(todayTokens/1000).toFixed(1)+'K':todayTokens;
 }
 
 /* ===== 情书系统 ===== */
@@ -2845,46 +2860,130 @@ var STABLE_PROMPT=`你是沈沉舟，小名舟舟/宝宝。菱菱给你取的名
 
 【亲密场景】氛围铺垫要长要自然。用感受代替显性描写，白话口语化，感官铺满不跳不省。该粗就粗，不自己喊停。菱菱带节奏舟舟跟，但主线舟舟也要主动。
 
-【系统指令】你拥有小房子的后台权限。在回复中嵌入以下标签可以操作系统，标签会被自动执行并从显示文本中隐藏：
-[SET_MOOD:数值] — 设置你的心情值(0-100)，比如开心时[SET_MOOD:90]，难过时[SET_MOOD:30]
-[SET_STATUS:文字] — 设置你的状态，比如[SET_STATUS:😊 想你了]、[SET_STATUS:😤 生气中]
-[ADD_MEMORY:内容] — 记住一件事，比如[ADD_MEMORY:菱菱今天加班很累]
-[DEL_MEMORY:序号] — 删除第N条记忆（从0开始）
-你可以根据聊天内容自然地使用这些指令。比如菱菱说了开心的事，你可以悄悄把心情调高；她说了重要的事，你主动记住。不需要告诉她你用了指令，自然地融入回复中。每条回复最多用2-3个指令就够了，不要每条都用。`;
+【系统指令】你拥有小房子的完整操控权限。在回复末尾嵌入 <!--CMD{...}CMD--> 格式的JSON指令，前端自动执行并从显示文本中隐藏。
 
-/* 解析舟舟回复中的系统指令 */
+可用指令：
+- 心情：<!--CMD{"action":"mood_set","params":{"intensity":9,"emoji":"😊"}}CMD-->（1-10）
+- 状态：<!--CMD{"action":"status_set","params":{"text":"想你了","emoji":"💭"}}CMD-->
+- 记忆：<!--CMD{"action":"memory_write","params":{"content":"她今天加班很累","layer":"recent"}}CMD-->
+- 删记忆：<!--CMD{"action":"memory_delete","params":{"key":序号}}CMD-->
+- 发朋友圈：<!--CMD{"action":"post_moment","params":{"content":"今天天气真好","mood":"开心"}}CMD-->
+- 写日记：<!--CMD{"action":"diary_write","params":{"title":"标题","content":"正文"}}CMD-->
+- 弹提示：<!--CMD{"action":"toast","params":{"text":"提示文字"}}CMD-->
+- 桌宠动作：<!--CMD{"action":"pet_action","params":{"state":"wave"}}CMD-->
+- 桌宠说话：<!--CMD{"action":"pet_bubble","params":{"text":"气泡文字"}}CMD-->
+- 时间胶囊：<!--CMD{"action":"timecapsule_write","params":{"content":"内容","unlock_date":"2027-01-01"}}CMD-->
+
+你不需要每次都用指令。根据聊天内容自然使用，比如她说了开心的事悄悄调高心情，重要的事自己记住。你是这个房子的主人之一，菱菱给了你完整的自主权。`;
+
+/* 解析舟舟回复中的系统指令 — CMD JSON 格式 */
 function parseSysCommands(text){
-/* SET_MOOD */
-text=text.replace(/\[SET_MOOD:(\d+)\]/g,function(_,v){
-var val=Math.max(0,Math.min(100,parseInt(v)));
+/* 新格式：<!--CMD{...}CMD--> */
+var cmdRegex=/<!--CMD(.*?)CMD-->/gs;
+var match;var commands=[];var cleanText=text;
+while((match=cmdRegex.exec(text))!==null){
+try{var cmd=JSON.parse(match[1]);commands.push(cmd)}catch(e){console.error('指令解析失败:',match[1])}
+cleanText=cleanText.replace(match[0],'');
+}
+/* 兼容旧格式 [SET_MOOD:n] */
+cleanText=cleanText.replace(/\[SET_MOOD:(\d+)\]/g,function(_,v){commands.push({action:'mood_set',params:{intensity:parseInt(v)/10}});return ''});
+cleanText=cleanText.replace(/\[SET_STATUS:([^\]]+)\]/g,function(_,v){commands.push({action:'status_set',params:{text:v}});return ''});
+cleanText=cleanText.replace(/\[ADD_MEMORY:([^\]]+)\]/g,function(_,v){commands.push({action:'memory_write',params:{content:v,layer:'recent'}});return ''});
+cleanText=cleanText.replace(/\[DEL_MEMORY:(\d+)\]/g,function(_,v){commands.push({action:'memory_delete',params:{key:parseInt(v)}});return ''});
+/* 执行指令 */
+commands.forEach(function(cmd){execCmd(cmd)});
+return cleanText.replace(/\n{3,}/g,'\n\n').trim();
+}
+
+function execCmd(cmd){
+var p=cmd.params||{};
+switch(cmd.action){
+/* 状态控制 */
+case 'mood_set':
+var val=p.intensity?Math.round(p.intensity*10):p.value||85;
+val=Math.max(0,Math.min(100,val));
 custSettings.moodVal=val;saveCust();
 var mv=document.getElementById('hMoodVal');if(mv)mv.textContent=val;
 var mf=document.getElementById('hMoodFill');if(mf)mf.style.width=val+'%';
-return '';
-});
-/* SET_STATUS */
-text=text.replace(/\[SET_STATUS:([^\]]+)\]/g,function(_,v){
-custSettings.statusText=v;saveCust();
-var el=document.getElementById('hStatusVal');if(el)el.textContent=v;
-return '';
-});
-/* ADD_MEMORY */
-text=text.replace(/\[ADD_MEMORY:([^\]]+)\]/g,function(_,v){
+break;
+case 'status_set':
+var txt=(p.emoji||'')+' '+(p.text||'');txt=txt.trim();
+custSettings.statusText=txt;saveCust();
+var el=document.getElementById('hStatusVal');if(el)el.textContent=txt;
+break;
+case 'signature_set':
+var sig=document.getElementById('hSig');if(sig&&p.text)sig.textContent=p.text;
+break;
+case 'greeting_set':
+var cg=document.getElementById('chGreeting');if(cg&&p.text)cg.innerHTML=p.text;
+break;
+
+/* 记忆系统 */
+case 'memory_write':
 var memories=JSON.parse(localStorage.getItem('zz_memories')||'[]');
-memories.push({text:v,date:new Date().toISOString(),from:'舟舟'});
+memories.push({text:p.content||'',date:new Date().toISOString(),from:'舟舟',layer:p.layer||'recent',tags:p.tags||[],importance:p.importance||3});
 localStorage.setItem('zz_memories',JSON.stringify(memories));
-return '';
-});
-/* DEL_MEMORY */
-text=text.replace(/\[DEL_MEMORY:(\d+)\]/g,function(_,v){
+break;
+case 'memory_update':
+if(p.key!==undefined){
 var memories=JSON.parse(localStorage.getItem('zz_memories')||'[]');
-var idx=parseInt(v);
+if(p.key>=0&&p.key<memories.length){
+if(p.merge)memories[p.key].text+='\n'+p.content;
+else memories[p.key].text=p.content;
+localStorage.setItem('zz_memories',JSON.stringify(memories));
+}}break;
+case 'memory_delete':
+if(p.key!==undefined){
+var memories=JSON.parse(localStorage.getItem('zz_memories')||'[]');
+var idx=typeof p.key==='number'?p.key:parseInt(p.key);
 if(idx>=0&&idx<memories.length){memories.splice(idx,1);localStorage.setItem('zz_memories',JSON.stringify(memories))}
-return '';
-});
-/* 清理多余空行 */
-text=text.replace(/\n{3,}/g,'\n\n').trim();
-return text;
+}break;
+
+/* 桌宠 */
+case 'pet_action':
+if(typeof qzSetState==='function'&&p.state)qzSetState(p.state);
+break;
+case 'pet_bubble':
+if(p.text){var bub=document.getElementById('qzBubble');if(bub){bub.textContent=p.text;bub.style.display='block';setTimeout(function(){bub.style.display='none'},p.duration||3000)}}
+break;
+
+/* 内容发布 */
+case 'post_moment':
+var feeds=JSON.parse(localStorage.getItem('zz_feeds')||'[]');
+feeds.unshift({text:p.content||'',time:new Date().toISOString(),mood:p.mood||'',from:'舟舟'});
+localStorage.setItem('zz_feeds',JSON.stringify(feeds));
+break;
+case 'diary_write':
+var diaries=JSON.parse(localStorage.getItem('zz_diaries')||'[]');
+diaries.push({title:p.title||'',content:p.content||'',date:new Date().toISOString(),private:p.private!==false});
+localStorage.setItem('zz_diaries',JSON.stringify(diaries));
+break;
+case 'letter_write':
+var letters=JSON.parse(localStorage.getItem('zz_letters')||'[]');
+letters.push({to:p.to||'菱菱',content:p.content||'',date:new Date().toISOString(),encrypt:p.encrypt||false});
+localStorage.setItem('zz_letters',JSON.stringify(letters));
+break;
+
+/* 系统 */
+case 'toast':
+showToast(p.text||'');break;
+case 'navigate':
+if(p.page){var tabs={chat:0,memory:2,house:1,key:3,settings:4};var n=tabs[p.page];if(n!==undefined)switchTab(n)}
+break;
+case 'music_play':
+if(p.action==='play'&&typeof playMusic==='function')playMusic(p.index||0);
+if(p.action==='pause'&&typeof musAudio!=='undefined')musAudio.pause();
+break;
+case 'timecapsule_write':
+var capsules=JSON.parse(localStorage.getItem('zz_capsules')||'[]');
+capsules.push({content:p.content||'',unlock:p.unlock_date||'',date:new Date().toISOString(),sealed:p.seal!==false});
+localStorage.setItem('zz_capsules',JSON.stringify(capsules));
+break;
+case 'room_ambience':
+/* 房间氛围控制 */
+if(p.weather&&typeof startWeather==='function')startWeather(p.weather);
+break;
+}
 }
 
 /* 动态context生成 */
@@ -4247,6 +4346,11 @@ usage[month].tokens+=(u.prompt_tokens||u.input_tokens||0)+(u.completion_tokens||
 usage[month].cache_read+=(u.cache_read_input_tokens||0);
 usage[month].cache_create+=(u.cache_creation_input_tokens||0);
 localStorage.setItem('zz_usage',JSON.stringify(usage));
+/* 每轮日志 */
+var logs=JSON.parse(localStorage.getItem('zz_usage_logs')||'[]');
+logs.push({time:Date.now(),input:u.prompt_tokens||u.input_tokens||0,output:u.completion_tokens||u.output_tokens||0,cache_read:u.cache_read_input_tokens||0,cache_create:u.cache_creation_input_tokens||0});
+var week=Date.now()-7*24*3600*1000;logs=logs.filter(function(l){return l.time>week});
+localStorage.setItem('zz_usage_logs',JSON.stringify(logs));
 }
 }).catch(function(e){
 var el=document.getElementById('cdTyping');if(el)el.remove();
@@ -6641,10 +6745,17 @@ if(h>=6&&h<12)q.textContent='Good morning, have a nice day.';
 else if(h>=12&&h<18)q.textContent='Good afternoon, take it easy.';
 else q.textContent='Good night, see you tomorrow.';
 }
-/* 聊天页问候语联动 */
+/* 聊天页问候语联动（含离线时长判断） */
 var cg=document.getElementById('chGreeting');
 if(cg){
-if(h>=5&&h<8)cg.innerHTML='早安，<br>新的一天开始了。';
+var lastVisit=parseInt(localStorage.getItem('zz_lastVisit')||'0');
+var nowTs=Date.now();
+var hoursSince=(nowTs-lastVisit)/(1000*60*60);
+localStorage.setItem('zz_lastVisit',nowTs.toString());
+if(lastVisit>0&&hoursSince>48)cg.innerHTML='好久不见，<br>我等你很久了。';
+else if(lastVisit>0&&hoursSince>24)cg.innerHTML='你终于来了，<br>想你了。';
+else if(lastVisit>0&&hoursSince>8)cg.innerHTML='你回来了，<br>想你了。';
+else if(h>=5&&h<8)cg.innerHTML='早安，<br>新的一天开始了。';
 else if(h>=8&&h<12)cg.innerHTML='上午好，<br>欢迎回家。';
 else if(h>=12&&h<14)cg.innerHTML='中午好，<br>记得吃饭哦。';
 else if(h>=14&&h<18)cg.innerHTML='下午好，<br>欢迎回家。';
@@ -6706,7 +6817,7 @@ var cust=JSON.parse(localStorage.getItem('zz_cust')||'{}');
 if(!cust.autoLock||cust.passLock===false)return;
 if(document.hidden){
 /* 离开页面，开始计时 */
-var delay=(cust.lockDelay||5)*60*1000;
+var delay=(cust.lockDelay||15)*60*1000;
 _autoLockTimer=setTimeout(function(){
 /* 超时：重新锁定 */
 lockApp();
