@@ -48,7 +48,7 @@ body{font-family:'Noto Sans SC',sans-serif;font-weight:300;background:var(--bg);
 .main-bg-img{position:fixed;inset:0;background:var(--bg);z-index:-1;opacity:0;transition:opacity 1.5s}
 .main-bg-img.loaded{opacity:1}
 .content{flex:1;overflow-y:auto;display:flex;flex-direction:column}
-.page{display:none;flex:1;flex-direction:column;min-height:100%;overflow-y:auto}
+.page{display:none;flex:1;flex-direction:column;min-height:100%;overflow-y:auto;padding-bottom:70px}
 .page.on{display:flex}
 /* 页面切换动画 */
 .page.anim-fade{animation:pageFade var(--anim-dur,.3s) ease-out}
@@ -542,7 +542,7 @@ body{font-family:'Noto Sans SC',sans-serif;font-weight:300;background:var(--bg);
 @keyframes ambSweepGlint{0%,88%{transform:translateX(-55%);opacity:0}92%{opacity:.7}100%{transform:translateX(380%);opacity:0}}
 
 /* 底栏 */
-.navbar{flex-shrink:0;margin:0 20px calc(12px + env(safe-area-inset-bottom));padding:6px 8px;background:rgba(10,18,26,.55);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border:1px solid var(--cardb);border-radius:26px;position:relative}
+.navbar{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom));left:20px;right:20px;padding:6px 8px;background:rgba(10,18,26,.55);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border:1px solid var(--cardb);border-radius:26px;z-index:600}
 .nav-icons{display:flex;justify-content:space-around;align-items:center}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 10px;transition:.3s;border-radius:18px}
 .nav-item:active{transform:scale(.92)}
