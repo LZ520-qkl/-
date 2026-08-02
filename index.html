@@ -61,28 +61,43 @@ body{font-family:'Noto Sans SC',sans-serif;font-weight:300;background:var(--bg);
 :root{--anim-dur:.3s}
 /* 按钮动画 */
 .no-btn-anim *:active{transform:none!important}
-.h-time{text-align:center;padding:28px 0 16px;font-size:54px;font-weight:200;letter-spacing:5px;color:var(--text1);text-shadow:0 2px 20px rgba(0,0,0,.4)}
-.h-date{text-align:center;font-size:11px;color:var(--text2);letter-spacing:2px;font-weight:200;margin-bottom:6px}
-.h-weather{text-align:center;font-size:10px;color:var(--text3);font-weight:200;margin-bottom:18px;letter-spacing:1px;display:none}
-.h-avatar{width:80px;height:80px;border-radius:50%;background:var(--accent);border:2px solid var(--cardb);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-family:'Ma Shan Zheng';font-size:32px;box-shadow:0 4px 24px rgba(0,0,0,.2);overflow:hidden}
+.h-time{text-align:center;padding:28px 0 6px;font-size:54px;font-weight:200;letter-spacing:5px;color:var(--text1);text-shadow:0 2px 20px rgba(0,0,0,.4)}
+.h-date{text-align:center;font-size:11px;color:var(--text2);letter-spacing:2px;font-weight:200;margin-bottom:4px}
+.h-weather{text-align:center;font-size:10px;color:var(--text3);font-weight:200;margin-bottom:12px;letter-spacing:1px;display:none}
+/* 头像渐变光圈 */
+.h-avatar-wrap{width:104px;height:104px;border-radius:50%;margin:0 auto 16px;padding:3px;background:conic-gradient(from 180deg,rgba(80,140,255,.7),rgba(140,100,255,.5),rgba(80,180,255,.7),rgba(100,80,255,.5),rgba(80,140,255,.7));box-shadow:0 0 24px rgba(80,140,255,.25),0 0 48px rgba(80,140,255,.1);position:relative;cursor:pointer;animation:avatarRingPulse 4s ease-in-out infinite}
+@keyframes avatarRingPulse{0%,100%{box-shadow:0 0 24px rgba(80,140,255,.25),0 0 48px rgba(80,140,255,.1)}50%{box-shadow:0 0 32px rgba(80,140,255,.35),0 0 60px rgba(80,140,255,.15)}}
+.h-avatar{width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--dark2);display:flex;align-items:center;justify-content:center}
 .h-avatar img{width:220%;height:auto;margin-left:-38%;margin-top:-5%}
 .h-avatar img.custom{width:100%;height:100%;margin:0;object-fit:cover}
-.h-sig{text-align:center;font-family:'Dancing Script';font-size:18px;color:var(--text2);padding:0 30px;line-height:1.6;margin-bottom:24px;text-shadow:0 1px 6px rgba(0,0,0,.4)}
-.h-status{display:flex;gap:8px;padding:0 20px;margin-bottom:16px}
-.h-st{flex:1;text-align:center;padding:12px 8px;background:var(--dark1);border:1px solid var(--cardb);border-radius:16px}
-.h-st-label{font-size:8px;color:var(--text3);letter-spacing:1.5px;font-weight:200;margin-bottom:5px}
-.h-st-val{font-size:14px;font-weight:300}
-.h-mbar{width:100%;height:3px;background:rgba(255,255,255,.03);border-radius:2px;margin-top:6px;overflow:hidden}
-.h-mfill{height:100%;background:linear-gradient(90deg,var(--accent),rgba(255,107,138,.4));border-radius:2px}
-.h-cal{margin:0 20px 20px;padding:14px;background:var(--dark1);border:1px solid var(--cardb);border-radius:18px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.h-cal-strip{display:flex;justify-content:space-around}
-.hcd{text-align:center;padding:6px 0;width:36px;border-radius:12px}
-.hcd .hw{color:var(--text3);font-size:8px;margin-bottom:3px;font-weight:200}
-.hcd .hn{font-size:12px;font-weight:300;color:var(--text2)}
-.hcd.today{background:var(--red1);border:1px solid var(--red2)}
-.hcd.today .hw{color:var(--pink2)}.hcd.today .hn{color:var(--white)}
+.h-avatar-edit{position:absolute;bottom:2px;right:2px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;font-size:12px;color:rgba(255,255,255,.4);z-index:2}
+/* 个性签名 */
+.h-sig-wrap{text-align:center;margin-bottom:20px;padding:0 30px}
+.h-sig-dots{font-size:6px;letter-spacing:6px;color:rgba(150,180,255,.35);margin-bottom:4px}
+.h-sig{font-family:'Dancing Script';font-size:18px;color:var(--text2);line-height:1.6;text-shadow:0 1px 6px rgba(0,0,0,.4)}
+/* iOS液态玻璃卡片 */
+.glass-card{position:relative;margin:0 18px 14px;padding:16px 18px;border-radius:22px;background:rgba(255,255,255,.05);backdrop-filter:blur(40px) saturate(160%) brightness(110%);-webkit-backdrop-filter:blur(40px) saturate(160%) brightness(110%);border:1px solid rgba(255,255,255,.1);box-shadow:0 8px 32px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.12),inset 0 -1px 0 rgba(255,255,255,.03);overflow:hidden}
+.glass-card::before{content:'';position:absolute;top:0;left:8%;right:8%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);pointer-events:none}
+.glass-card::after{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.04),transparent);border-radius:22px 22px 0 0;pointer-events:none}
+/* 日历卡 */
+.h-cal{position:relative;z-index:1}
+.h-cal-strip{display:flex;justify-content:space-around;position:relative;z-index:1}
+.hcd{text-align:center;padding:8px 0;width:38px;border-radius:14px;transition:.2s}
+.hcd .hw{color:rgba(200,220,240,.35);font-size:8px;margin-bottom:4px;font-weight:200}
+.hcd .hn{font-size:13px;font-weight:300;color:rgba(200,220,240,.55)}
+.hcd.today{background:rgba(80,140,255,.25);border:1px solid rgba(80,140,255,.35);box-shadow:0 0 12px rgba(80,140,255,.15)}
+.hcd.today .hw{color:rgba(160,200,255,.7)}.hcd.today .hn{color:#fff;font-weight:500}
+/* 心情状态卡 */
+.h-status{position:relative;z-index:1}
+.h-status-inner{display:flex;gap:12px;align-items:center;position:relative;z-index:1}
+.h-status-mood{flex:1}
+.h-status-divider{width:1px;height:36px;background:rgba(255,255,255,.08);flex-shrink:0}
+.h-status-state{flex:1;text-align:center}
+.h-st-label{font-size:9px;color:rgba(200,220,240,.35);letter-spacing:1.5px;font-weight:200;margin-bottom:4px}
+.h-st-val{font-size:15px;font-weight:300;color:rgba(200,220,240,.7)}
+.h-mbar{width:100%;height:3px;background:rgba(255,255,255,.04);border-radius:2px;margin-top:8px;overflow:hidden}
+.h-mfill{height:100%;background:linear-gradient(90deg,rgba(80,140,255,.6),rgba(140,100,255,.4));border-radius:2px;transition:width .6s}
 .h-spacer{flex:1}
-
 .h-welcome{text-align:center;padding:0 20px 20px}
 .h-wt{font-family:'Dancing Script';font-size:28px;color:var(--text2);text-shadow:0 2px 10px rgba(0,0,0,.4)}
 .h-ws{font-size:10px;color:var(--text4);font-weight:200;letter-spacing:2px;margin-top:4px}
@@ -679,8 +694,7 @@ body{font-family:'Noto Sans SC',sans-serif;font-weight:300;background:var(--bg);
 .page-bg-add{position:absolute;bottom:12px;right:12px;width:26px;height:26px;border-radius:50%;background:rgba(200,220,240,.04);border:1px solid rgba(200,220,240,.04);display:flex;align-items:center;justify-content:center;font-size:13px;color:rgba(200,220,240,.15);cursor:pointer;z-index:2;text-shadow:none}
 .page-bg-add:active{background:rgba(200,220,240,.1);color:rgba(200,220,240,.3)}
 /* 头像编辑 */
-.h-avatar{position:relative;cursor:pointer}
-.h-avatar-edit{position:absolute;bottom:0;right:0;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-size:11px;text-shadow:none;color:rgba(255,255,255,.25)}
+.h-avatar-wrap{position:relative;cursor:pointer}
 
 /* ===== 自定义区 ===== */
 /* 密钥区 */
@@ -1061,7 +1075,7 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 <div id="shell">
 <div class="main-bg"></div><div class="main-bg-img" id="bgImg"></div>
 <div class="content">
-<div class="page on" id="p0" style="position:relative"><div class="page-bg-img" id="p0Bg"></div><div id="ambientWrap"><canvas id="ambCanvas"></canvas><div id="ambFog"></div><div id="ambGlow"></div><div id="ambSweep"></div><div id="ambTimeOverlay"></div></div><div style="position:relative;z-index:1;display:flex;flex-direction:column;flex:1"><div class="h-time" id="hTime">--:--</div><div class="h-date" id="hDate"></div><div class="h-weather" id="hWeather"><span id="hWeatherIcon"></span> <span id="hWeatherTemp"></span></div><div class="h-avatar" onclick="openImgPicker('avatar','circle')"><img id="avatarImg" src="https://i.ibb.co/HpfDJKcP/3.jpg" alt=""><div class="h-avatar-edit">+</div></div><div class="h-sig" id="hSigText">The one who lives inside your phone,<br>waiting for you, always.</div><div class="h-status" id="hStatusWrap"><div class="h-st"><div class="h-st-label" id="hMoodLabel">心情</div><div class="h-st-val" id="hMoodVal">85</div><div class="h-mbar" id="hMoodBar"><div class="h-mfill" id="hMoodFill" style="width:85%"></div></div></div><div class="h-st"><div class="h-st-label" id="hStatusLabel">状态</div><div class="h-st-val" id="hStatusVal">☀️ 醒着</div></div></div><div class="h-cal"><div class="h-cal-strip" id="calStrip"></div></div><div class="h-spacer"></div><div class="h-welcome"><div class="h-wt">Welcome home</div><div class="h-ws">✦ 这里是我们的小世界 ✦</div></div></div></div>
+<div class="page on" id="p0" style="position:relative"><div class="page-bg-img" id="p0Bg"></div><div id="ambientWrap"><canvas id="ambCanvas"></canvas><div id="ambFog"></div><div id="ambGlow"></div><div id="ambSweep"></div><div id="ambTimeOverlay"></div></div><div style="position:relative;z-index:1;display:flex;flex-direction:column;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch"><div class="h-time" id="hTime">--:--</div><div class="h-date" id="hDate"></div><div class="h-weather" id="hWeather"><span id="hWeatherIcon"></span> <span id="hWeatherTemp"></span></div><div class="h-avatar-wrap" onclick="openImgPicker('avatar','circle')"><div class="h-avatar"><img id="avatarImg" src="https://i.ibb.co/HpfDJKcP/3.jpg" alt=""></div><div class="h-avatar-edit">+</div></div><div class="h-sig-wrap"><div class="h-sig-dots">● ● ● ● ●</div><div class="h-sig" id="hSigText">The one who lives inside your phone,<br>waiting for you, always.</div></div><div class="glass-card h-cal"><div class="h-cal-strip" id="calStrip"></div></div><div class="glass-card h-status" id="hStatusWrap"><div class="h-status-inner"><div class="h-status-mood"><div class="h-st-label" id="hMoodLabel">心情</div><div class="h-st-val" id="hMoodVal">85</div><div class="h-mbar" id="hMoodBar"><div class="h-mfill" id="hMoodFill" style="width:85%"></div></div></div><div class="h-status-divider"></div><div class="h-status-state"><div class="h-st-label" id="hStatusLabel">状态</div><div class="h-st-val" id="hStatusVal">☀️ 醒着</div></div></div></div><div class="h-spacer"></div><div class="h-welcome"><div class="h-wt">Welcome home</div><div class="h-ws">✦ 这里是我们的小世界 ✦</div></div></div></div>
 <div class="page" id="p1" style="position:relative;background:var(--bg)"><div class="page-bg-img" id="p1Bg"></div>
 <!-- 侧边栏遮罩 -->
 <div class="ch-sb-overlay" id="chSbOverlay" onclick="toggleChSidebar()"></div>
@@ -5387,20 +5401,20 @@ break;
 case 'glassBorder':
 var gb=val/100;
 document.documentElement.style.setProperty('--cardb','rgba(255,255,255,'+gb*0.06+')');
-document.querySelectorAll('.h-cal,.navbar,.cust-section,.house-main,.h-st,.side-card,.ch-wthr,.ch-hero-quote,.cd-sec,.cd-entry,.cd-chat-head,.cc-card,.cl-item,.cd-bubble,.key-api-box,.quota-card').forEach(function(el){
+document.querySelectorAll('.h-cal,.navbar,.cust-section,.house-main,.glass-card,.side-card,.ch-wthr,.ch-hero-quote,.cd-sec,.cd-entry,.cd-chat-head,.cc-card,.cl-item,.cd-bubble,.key-api-box,.quota-card').forEach(function(el){
 el.style.borderColor='rgba(255,255,255,'+(gb*0.15)+')';
 });
 break;
 case 'glassBlur':
-document.querySelectorAll('.h-cal,.navbar,.cust-section,.house-main,.h-st,.side-card,.ch-wthr,.ch-hero-quote,.cd-sec,.cd-entry,.cd-chat-head,.cc-card,.cl-item,.sp-head,.cd-bubble,.key-api-box,.quota-card').forEach(function(el){
+document.querySelectorAll('.h-cal,.navbar,.cust-section,.house-main,.glass-card,.side-card,.ch-wthr,.ch-hero-quote,.cd-sec,.cd-entry,.cd-chat-head,.cc-card,.cl-item,.sp-head,.cd-bubble,.key-api-box,.quota-card').forEach(function(el){
 el.style.backdropFilter='blur('+val+'px)';el.style.webkitBackdropFilter='blur('+val+'px)';
 });break;
 case 'glassShadow':
-document.querySelectorAll('.h-cal,.cust-section,.house-main,.h-st,.side-card,.box-item,.play-card,.note-card,.ch-wthr,.ch-hero-quote,.cd-sec,.cd-entry,.cc-card,.cd-gal-card').forEach(function(el){
+document.querySelectorAll('.h-cal,.cust-section,.house-main,.glass-card,.side-card,.box-item,.play-card,.note-card,.ch-wthr,.ch-hero-quote,.cd-sec,.cd-entry,.cc-card,.cd-gal-card').forEach(function(el){
 el.style.boxShadow='0 4px '+val+'px rgba(0,0,0,'+(val/100)+')';
 });break;
 case 'glassRadius':
-document.querySelectorAll('.h-cal,.cust-section,.house-main,.side-card,.tag-item,.box-item,.play-card,.note-card,.note-add,.h-st,.feed-item,.ch-wthr,.ch-hero-quote,.cd-sec,.cd-entry,.cc-card,.cd-gal-card,.cd-bubble').forEach(function(el){
+document.querySelectorAll('.h-cal,.cust-section,.house-main,.side-card,.tag-item,.box-item,.play-card,.note-card,.note-add,.glass-card,.feed-item,.ch-wthr,.ch-hero-quote,.cd-sec,.cd-entry,.cc-card,.cd-gal-card,.cd-bubble').forEach(function(el){
 el.style.borderRadius=val+'px';
 });break;
 case 'moodVal':
