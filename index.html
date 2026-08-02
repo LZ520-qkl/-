@@ -934,7 +934,7 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 /* 角色聊天页 */
 .cd-chat-wrap{position:fixed;inset:0;z-index:650;background:var(--bg);display:none;flex-direction:column}
 .cd-chat-wrap.on{display:flex}
-.cd-chat-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.2;pointer-events:none}
+.cd-chat-bg{position:absolute;inset:0;background-size:cover;background-position:center;pointer-events:none}
 .cd-chat-head{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--cardb);position:relative;z-index:1;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .cd-chat-hname{font-size:14px;color:var(--white);font-weight:400;flex:1;text-align:center}
 .cd-chat-msgs{flex:1;overflow-y:auto;padding:14px;position:relative;z-index:1;-webkit-overflow-scrolling:touch}
@@ -1061,7 +1061,7 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 <div id="shell">
 <div class="main-bg"></div><div class="main-bg-img" id="bgImg"></div>
 <div class="content">
-<div class="page on" id="p0" style="position:relative"><div class="page-bg-img" id="p0Bg"></div><div id="ambientWrap"><canvas id="ambCanvas"></canvas><div id="ambFog"></div><div id="ambGlow"></div><div id="ambSweep"></div><div id="ambTimeOverlay"></div></div><div style="position:relative;z-index:1;display:flex;flex-direction:column;flex:1"><div class="h-time" id="hTime">--:--</div><div class="h-date" id="hDate"></div><div class="h-weather" id="hWeather"><span id="hWeatherIcon"></span> <span id="hWeatherTemp"></span></div><div class="h-avatar" onclick="openImgPicker('avatar','circle')"><img id="avatarImg" src="https://i.ibb.co/HpfDJKcP/3.jpg" alt=""><div class="h-avatar-edit">+</div></div><div class="h-sig">The one who lives inside your phone,<br>waiting for you, always.</div><div class="h-status" id="hStatusWrap"><div class="h-st"><div class="h-st-label" id="hMoodLabel">心情</div><div class="h-st-val" id="hMoodVal">85</div><div class="h-mbar" id="hMoodBar"><div class="h-mfill" id="hMoodFill" style="width:85%"></div></div></div><div class="h-st"><div class="h-st-label" id="hStatusLabel">状态</div><div class="h-st-val" id="hStatusVal">☀️ 醒着</div></div></div><div class="h-cal"><div class="h-cal-strip" id="calStrip"></div></div><div class="h-spacer"></div><div class="h-welcome"><div class="h-wt">Welcome home</div><div class="h-ws">✦ 这里是我们的小世界 ✦</div></div></div></div>
+<div class="page on" id="p0" style="position:relative"><div class="page-bg-img" id="p0Bg"></div><div id="ambientWrap"><canvas id="ambCanvas"></canvas><div id="ambFog"></div><div id="ambGlow"></div><div id="ambSweep"></div><div id="ambTimeOverlay"></div></div><div style="position:relative;z-index:1;display:flex;flex-direction:column;flex:1"><div class="h-time" id="hTime">--:--</div><div class="h-date" id="hDate"></div><div class="h-weather" id="hWeather"><span id="hWeatherIcon"></span> <span id="hWeatherTemp"></span></div><div class="h-avatar" onclick="openImgPicker('avatar','circle')"><img id="avatarImg" src="https://i.ibb.co/HpfDJKcP/3.jpg" alt=""><div class="h-avatar-edit">+</div></div><div class="h-sig" id="hSigText">The one who lives inside your phone,<br>waiting for you, always.</div><div class="h-status" id="hStatusWrap"><div class="h-st"><div class="h-st-label" id="hMoodLabel">心情</div><div class="h-st-val" id="hMoodVal">85</div><div class="h-mbar" id="hMoodBar"><div class="h-mfill" id="hMoodFill" style="width:85%"></div></div></div><div class="h-st"><div class="h-st-label" id="hStatusLabel">状态</div><div class="h-st-val" id="hStatusVal">☀️ 醒着</div></div></div><div class="h-cal"><div class="h-cal-strip" id="calStrip"></div></div><div class="h-spacer"></div><div class="h-welcome"><div class="h-wt">Welcome home</div><div class="h-ws">✦ 这里是我们的小世界 ✦</div></div></div></div>
 <div class="page" id="p1" style="position:relative;background:var(--bg)"><div class="page-bg-img" id="p1Bg"></div>
 <!-- 侧边栏遮罩 -->
 <div class="ch-sb-overlay" id="chSbOverlay" onclick="toggleChSidebar()"></div>
@@ -1830,8 +1830,8 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 <div class="cust-sec-body">
 <div class="cust-slider-row">
 <div class="cust-slider-label">背景透明度</div>
-<div class="cust-slider-wrap"><input type="range" class="cust-slider" id="s_chatAlpha" min="0" max="100" value="50" oninput="onSlider('chatAlpha',this.value)"></div>
-<div class="cust-slider-val" id="v_chatAlpha">50</div>
+<div class="cust-slider-wrap"><input type="range" class="cust-slider" id="s_chatAlpha" min="0" max="100" value="100" oninput="onSlider('chatAlpha',this.value)"></div>
+<div class="cust-slider-val" id="v_chatAlpha">100</div>
 </div>
 <div style="font-size:10px;color:rgba(200,220,240,.2);font-weight:200;margin-bottom:6px">气泡样式</div>
 <div class="cust-opt-row">
@@ -2928,6 +2928,7 @@ var el=document.getElementById('hStatusVal');if(el)el.textContent=txt;
 break;
 case 'signature_set':
 var sig=document.getElementById('chHeroSub');if(sig&&p.text){sig.textContent=p.text;custSettings.sigText=p.text;saveCust()}
+var hSig=document.getElementById('hSigText');if(hSig&&p.text)hSig.textContent=p.text;
 break;
 case 'greeting_set':
 var cg=document.getElementById('chGreeting');
@@ -2970,22 +2971,18 @@ moments.unshift({text:p.content||'',time:new Date().toLocaleString(),mood:p.mood
 localStorage.setItem('zz_moments',JSON.stringify(moments));
 break;
 case 'diary_write':
-/* 写到写作区日记模式 + note卡片 */
+/* 写到写作区日记模式 */
 var old=localStorage.getItem('zz_study_diary')||'';
 var now=new Date();var ds=now.getMonth()+1+'/'+now.getDate()+' '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
 var entry='\n\n--- '+ds+(p.title?' · '+p.title:'')+'---\n'+(p.content||'');
 localStorage.setItem('zz_study_diary',old+entry);
-var notes=getNotes();notes.push({text:(p.title?'【'+p.title+'】\n':'')+p.content,from:'舟舟的日记',date:ds});saveNotes(notes);
-if(typeof renderNotes==='function')renderNotes();
 break;
 case 'letter_write':
-/* 写到写作区信件模式 + note卡片 */
+/* 写到写作区信件模式 */
 var old=localStorage.getItem('zz_study_letter')||'';
 var now=new Date();var ds=now.getMonth()+1+'/'+now.getDate()+' '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
 var entry='\n\n--- '+ds+' · 致'+(p.to||'菱菱')+' ---\n'+(p.content||'');
 localStorage.setItem('zz_study_letter',old+entry);
-var notes=getNotes();notes.push({text:p.content,from:'舟舟写给'+(p.to||'菱菱'),date:ds});saveNotes(notes);
-if(typeof renderNotes==='function')renderNotes();
 break;
 
 /* 系统 */
@@ -4165,8 +4162,8 @@ document.getElementById('cdChatWrap').classList.add('on');
 var inp=document.getElementById('cdChatInp');
 inp.onkeydown=function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();cdSendMsg()}};
 var w=document.getElementById('cdChatMsgs');setTimeout(function(){w.scrollTop=w.scrollHeight},50);
-/* 禁用其他input，防止iOS显示表单导航栏 */
-document.querySelectorAll('input,textarea,select').forEach(function(el){if(!el.closest('.cd-chat-bar')){el.dataset.wasDis=el.disabled?'1':'';el.disabled=true}});
+/* 禁用其他input，防止iOS显示表单导航栏（排除globalImgInput） */
+document.querySelectorAll('input,textarea,select').forEach(function(el){if(!el.closest('.cd-chat-bar')&&el.id!=='globalImgInput'){el.dataset.wasDis=el.disabled?'1':'';el.disabled=true}});
 }
 function openCdChat(){
 var ch=getChars();var c=ch[_cdIdx]||{};
@@ -4178,7 +4175,7 @@ document.getElementById('cdChatWrap').classList.add('on');
 var inp=document.getElementById('cdChatInp');
 inp.onkeydown=function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();cdSendMsg()}};
 var w=document.getElementById('cdChatMsgs');setTimeout(function(){w.scrollTop=w.scrollHeight},50);
-document.querySelectorAll('input,textarea,select').forEach(function(el){if(!el.closest('.cd-chat-bar')){el.dataset.wasDis=el.disabled?'1':'';el.disabled=true}});
+document.querySelectorAll('input,textarea,select').forEach(function(el){if(!el.closest('.cd-chat-bar')&&el.id!=='globalImgInput'){el.dataset.wasDis=el.disabled?'1':'';el.disabled=true}});
 }
 function closeCdChat(){
 var w=document.getElementById('cdChatWrap');
@@ -6640,7 +6637,7 @@ c.classList.toggle('on',c.dataset.theme===th);
 });
 
 /* 滑块 */
-var sliderDefaults={bgBlur:0,bgOpacity:100,bgBright:100,bgSat:100,fontSize:14,glassAlpha:60,glassBlur:8,glassBorder:6,glassShadow:0,glassRadius:16,lockDelay:5,chatAlpha:50,chatAvatarSize:36,chatGap:8,animSpeed:100,musVol:80,lyricSize:14,ftTime:54,ftDate:11,ftMood:14,ftSig:18,ftUser:13,ftBot:13,ftH1:24,ftH2:16,ftMenu:11,advShadow:4,musBgBlur:0,musBgAlpha:40,musBgBright:100,moodVal:85};
+var sliderDefaults={bgBlur:0,bgOpacity:100,bgBright:100,bgSat:100,fontSize:14,glassAlpha:60,glassBlur:8,glassBorder:6,glassShadow:0,glassRadius:16,lockDelay:5,chatAlpha:100,chatAvatarSize:36,chatGap:8,animSpeed:100,musVol:80,lyricSize:14,ftTime:54,ftDate:11,ftMood:14,ftSig:18,ftUser:13,ftBot:13,ftH1:24,ftH2:16,ftMenu:11,advShadow:4,musBgBlur:0,musBgAlpha:40,musBgBright:100,moodVal:85};
 Object.keys(sliderDefaults).forEach(function(key){
 var val=custSettings[key]!==undefined?custSettings[key]:sliderDefaults[key];
 var slider=document.getElementById('s_'+key);
@@ -6692,6 +6689,11 @@ var val=custSettings[k]||stDefaults[k];
 var inp=document.getElementById('inp_'+k);if(inp)inp.value=val;
 onStatusInput(k,val);
 });
+/* 恢复签名文本到首页和聊天页 */
+if(custSettings.sigText){
+var hSig=document.getElementById('hSigText');if(hSig)hSig.textContent=custSettings.sigText;
+var cSig=document.getElementById('chHeroSub');if(cSig)cSig.textContent=custSettings.sigText;
+}
 /* 随机语录 */
 randomQuote();
 
