@@ -106,16 +106,32 @@ body{font-family:'Noto Sans SC',sans-serif;font-weight:300;background:var(--bg);
 .cal-grid .cd{text-align:center;font-size:11px;color:rgba(220,235,255,.5);font-weight:300;width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:50%;text-shadow:0 1px 4px rgba(0,0,0,.5)}
 .cal-grid .cd.today{background:rgba(80,140,255,.25);color:#fff;font-weight:500;box-shadow:0 0 12px rgba(80,140,255,.3),inset 0 0 8px rgba(80,140,255,.1);text-shadow:0 0 8px rgba(150,200,255,.4)}
 .cal-grid .cd.other{color:rgba(200,220,240,.18);text-shadow:none}
-/* 心情状态卡 */
-.h-status{position:relative;z-index:1}
-.h-status-inner{display:flex;gap:12px;align-items:center;position:relative;z-index:1}
-.h-status-mood{flex:1}
-.h-status-divider{width:1px;height:36px;background:rgba(255,255,255,.08);flex-shrink:0}
-.h-status-state{flex:1;text-align:center}
-.h-st-label{font-size:9px;color:rgba(200,220,240,.35);letter-spacing:1.5px;font-weight:200;margin-bottom:4px}
-.h-st-val{font-size:15px;font-weight:300;color:rgba(200,220,240,.7)}
-.h-mbar{width:100%;height:3px;background:rgba(255,255,255,.04);border-radius:2px;margin-top:8px;overflow:hidden}
-.h-mfill{height:100%;background:linear-gradient(90deg,rgba(80,140,255,.6),rgba(140,100,255,.4));border-radius:2px;transition:width .6s}
+/* 心情值卡片 */
+.h-mood-card{position:relative;z-index:1;margin:0 14px 14px;overflow:visible}
+.mood-inner{border-radius:20px;background:rgba(6,12,22,.5);overflow:hidden;padding:18px 20px 16px;position:relative}
+.mood-inner::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(165deg,rgba(255,255,255,.06) 0%,transparent 45%);pointer-events:none;z-index:1;border-radius:20px 20px 0 0}
+/* 标题行 */
+.mood-head{display:flex;align-items:center;gap:8px;margin-bottom:14px;position:relative;z-index:2}
+.mood-head svg{width:18px;height:18px;fill:rgba(200,60,80,.7);filter:drop-shadow(0 0 4px rgba(200,60,80,.3))}
+.mood-title{font-size:16px;color:rgba(230,235,245,.8);font-weight:400;letter-spacing:1px}
+.mood-sub{font-size:8px;color:rgba(200,220,240,.3);letter-spacing:2px;font-weight:200;margin-top:1px}
+/* 数值行 */
+.mood-val-row{display:flex;align-items:flex-end;gap:6px;margin-bottom:12px;position:relative;z-index:2}
+.mood-num{font-size:54px;font-weight:200;color:rgba(220,80,100,.9);line-height:1;text-shadow:0 0 20px rgba(200,50,70,.4),0 0 50px rgba(180,40,60,.15),0 2px 8px rgba(0,0,0,.5);letter-spacing:-2px}
+.mood-heart{width:36px;height:36px;margin-bottom:6px;filter:drop-shadow(0 0 8px rgba(200,50,70,.35))}
+.mood-max{font-size:14px;color:rgba(200,220,240,.3);font-weight:200;margin-bottom:8px}
+/* 进度条 */
+.mood-bar{width:100%;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:visible;position:relative;z-index:2;margin-bottom:14px}
+.mood-bar-track{height:100%;border-radius:3px;background:linear-gradient(90deg,rgba(180,40,60,.7),rgba(220,60,80,.85));box-shadow:0 0 12px rgba(200,50,70,.3),0 0 24px rgba(200,50,70,.1);position:relative;transition:width .6s}
+.mood-bar-diamond{position:absolute;right:-5px;top:50%;transform:translateY(-50%) rotate(45deg);width:8px;height:8px;background:rgba(220,80,100,.6);border:1px solid rgba(255,120,140,.3);box-shadow:0 0 8px rgba(200,50,70,.4)}
+/* 底部文字 */
+.mood-footer{position:relative;z-index:2;border-top:1px solid rgba(255,255,255,.04);padding-top:12px}
+.mood-footer-cn{font-size:11px;color:rgba(220,235,255,.4);font-weight:200;letter-spacing:1px}
+.mood-footer-en{font-size:7px;color:rgba(200,220,240,.2);letter-spacing:2px;margin-top:3px;text-transform:uppercase}
+/* 状态行（小型） */
+.mood-status-row{display:flex;align-items:center;gap:8px;margin-top:8px;position:relative;z-index:2}
+.mood-status-label{font-size:8px;color:rgba(200,220,240,.25);letter-spacing:1.5px;font-weight:200}
+.mood-status-val{font-size:13px;color:rgba(220,235,255,.55);font-weight:300}
 .h-spacer{flex:1}
 .h-welcome{text-align:center;padding:0 20px 20px}
 .h-wt{font-family:'Dancing Script';font-size:28px;color:var(--text2);text-shadow:0 2px 10px rgba(0,0,0,.4)}
@@ -1095,7 +1111,13 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 <div id="shell">
 <div class="main-bg"></div><div class="main-bg-img" id="bgImg"></div>
 <div class="content">
-<div class="page on" id="p0" style="position:relative"><div class="page-bg-img" id="p0Bg"></div><div id="ambientWrap"><canvas id="ambCanvas"></canvas><div id="ambFog"></div><div id="ambGlow"></div><div id="ambSweep"></div><div id="ambTimeOverlay"></div></div><div style="position:relative;z-index:1;display:flex;flex-direction:column;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch"><div class="h-time" id="hTime">--:--</div><div class="h-date" id="hDate"></div><div class="h-weather" id="hWeather"><span id="hWeatherIcon"></span> <span id="hWeatherTemp"></span></div><div class="h-avatar-wrap" onclick="openImgPicker('avatar','circle')"><div class="h-avatar"><img id="avatarImg" src="https://i.ibb.co/HpfDJKcP/3.jpg" alt=""></div><div class="h-avatar-edit">+</div></div><div class="h-sig-wrap"><div class="h-sig-dots">● ● ● ● ●</div><div class="h-sig" id="hSigText">The one who lives inside your phone,<br>waiting for you, always.</div></div><div class="h-cal"><div class="cal-glass"><div class="cal-inner"><div class="cal-left"><div class="cal-left-bg" id="calBgEl"></div><div class="cal-left-bg-add" onclick="openImgPicker('calBg','rect')">+</div><div class="cal-month" id="calMonth">AUGUST</div><div class="cal-day-big" id="calDayBig">2</div><div class="cal-weekday" id="calWeekday">SUNDAY · 周日</div><div class="cal-deco">✦</div><div class="cal-quote" id="calQuote">在黑暗中燃烧的蝶翼<br>也能照亮你归来的路。</div></div><div class="cal-right"><div class="cal-grid-head"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div class="cal-grid" id="calGrid"></div></div></div></div></div><div class="glass-card h-status" id="hStatusWrap"><div class="h-status-inner"><div class="h-status-mood"><div class="h-st-label" id="hMoodLabel">心情</div><div class="h-st-val" id="hMoodVal">85</div><div class="h-mbar" id="hMoodBar"><div class="h-mfill" id="hMoodFill" style="width:85%"></div></div></div><div class="h-status-divider"></div><div class="h-status-state"><div class="h-st-label" id="hStatusLabel">状态</div><div class="h-st-val" id="hStatusVal">☀️ 醒着</div></div></div></div><div class="h-spacer"></div><div class="h-welcome"><div class="h-wt">Welcome home</div><div class="h-ws">✦ 这里是我们的小世界 ✦</div></div></div></div>
+<div class="page on" id="p0" style="position:relative"><div class="page-bg-img" id="p0Bg"></div><div id="ambientWrap"><canvas id="ambCanvas"></canvas><div id="ambFog"></div><div id="ambGlow"></div><div id="ambSweep"></div><div id="ambTimeOverlay"></div></div><div style="position:relative;z-index:1;display:flex;flex-direction:column;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch"><div class="h-time" id="hTime">--:--</div><div class="h-date" id="hDate"></div><div class="h-weather" id="hWeather"><span id="hWeatherIcon"></span> <span id="hWeatherTemp"></span></div><div class="h-avatar-wrap" onclick="openImgPicker('avatar','circle')"><div class="h-avatar"><img id="avatarImg" src="https://i.ibb.co/HpfDJKcP/3.jpg" alt=""></div><div class="h-avatar-edit">+</div></div><div class="h-sig-wrap"><div class="h-sig-dots">● ● ● ● ●</div><div class="h-sig" id="hSigText">The one who lives inside your phone,<br>waiting for you, always.</div></div><div class="h-cal"><div class="cal-glass"><div class="cal-inner"><div class="cal-left"><div class="cal-left-bg" id="calBgEl"></div><div class="cal-left-bg-add" onclick="openImgPicker('calBg','rect')">+</div><div class="cal-month" id="calMonth">AUGUST</div><div class="cal-day-big" id="calDayBig">2</div><div class="cal-weekday" id="calWeekday">SUNDAY · 周日</div><div class="cal-deco">✦</div><div class="cal-quote" id="calQuote">在黑暗中燃烧的蝶翼<br>也能照亮你归来的路。</div></div><div class="cal-right"><div class="cal-grid-head"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div class="cal-grid" id="calGrid"></div></div></div></div></div><div class="h-mood-card"><div class="cal-glass"><div class="mood-inner">
+<div class="mood-head"><svg viewBox="0 0 24 24"><path d="M12 21c-1.5 0-6.5-5-8-8C2.5 10 3 7 5.5 5.5S10.5 4 12 6c1.5-2 4-2.5 6.5-.5S21.5 10 20 13c-1.5 3-6.5 8-8 8z"/></svg><div><div class="mood-title" id="hMoodLabel">心情值</div><div class="mood-sub">MOOD VALUE</div></div></div>
+<div class="mood-val-row"><div class="mood-num" id="hMoodVal">85</div><svg class="mood-heart" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="hgrd" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="rgba(255,100,120,.9)"/><stop offset="50%" stop-color="rgba(200,40,60,.8)"/><stop offset="100%" stop-color="rgba(160,20,40,.7)"/></linearGradient></defs><path d="M12 21c-1.5 0-6.5-5-8-8C2.5 10 3 7 5.5 5.5S10.5 4 12 6c1.5-2 4-2.5 6.5-.5S21.5 10 20 13c-1.5 3-6.5 8-8 8z" fill="url(#hgrd)" stroke="rgba(255,140,160,.4)" stroke-width=".5"/><path d="M8 9c1.5-1.5 3-1 4 .5" stroke="rgba(255,200,210,.35)" stroke-width=".8" stroke-linecap="round" fill="none"/></svg><div class="mood-max">/100</div></div>
+<div class="mood-bar" id="hMoodBar"><div class="mood-bar-track" id="hMoodFill" style="width:85%"><div class="mood-bar-diamond"></div></div></div>
+<div class="mood-footer"><div class="mood-footer-cn">他此刻的心情，因你而波动。</div><div class="mood-footer-en">✦ mood change by you ✦</div></div>
+<div class="mood-status-row"><div class="mood-status-label" id="hStatusLabel">状态</div><div class="mood-status-val" id="hStatusVal">☀️ 醒着</div></div>
+</div></div></div><div class="h-spacer"></div><div class="h-welcome"><div class="h-wt">Welcome home</div><div class="h-ws">✦ 这里是我们的小世界 ✦</div></div></div></div>
 <div class="page" id="p1" style="position:relative;background:var(--bg)"><div class="page-bg-img" id="p1Bg"></div>
 <!-- 侧边栏遮罩 -->
 <div class="ch-sb-overlay" id="chSbOverlay" onclick="toggleChSidebar()"></div>
