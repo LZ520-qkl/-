@@ -1080,7 +1080,7 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 </div>
 <textarea class="moments-ta" id="momentsTa" placeholder="说点什么…"></textarea>
 <div class="moments-composer-row">
-<button type="button" class="moments-img-btn" onclick="document.getElementById('momentsImgInput').click()" ontouchstart="">🖼</button>
+<button type="button" class="moments-img-btn" onclick="document.getElementById('momentsImgInput').click()" ontouchstart=""><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></button>
 <img class="moments-img-preview" id="momentsImgPreview" style="display:none">
 <input type="file" id="momentsImgInput" accept="image/*" style="display:none" onchange="previewMomentImg(this)">
 <div style="flex:1"></div>
@@ -2600,6 +2600,9 @@ if(el)el.style.backgroundImage=data?'url('+data+')':'';
 }else if(key==='momentsAvatar'){
 var el=document.getElementById('momentsAvatar');
 if(el&&data){el.src=data;el.className='custom'}
+}else if(key==='momentsCover'){
+var el=document.getElementById('momentsCover');
+if(el)el.style.backgroundImage=data?'url('+data+')':'';
 }else if(key.match(/^p\d$/)){
 var el=document.getElementById(key+'Bg');
 if(el)el.style.backgroundImage=data?'url('+data+')':'';
@@ -2750,13 +2753,24 @@ var btns=document.querySelectorAll('.moments-who-btn');btns.forEach(function(b){
 btns[who==='zz'?0:1].classList.add('on');
 }
 var _momentImgData=null;
+function compressImg(dataUrl,maxW,quality,cb){
+var img=new Image();img.onload=function(){
+var w=img.width,h=img.height;
+if(w>maxW){h=Math.round(h*maxW/w);w=maxW}
+var c=document.createElement('canvas');c.width=w;c.height=h;
+var ctx=c.getContext('2d');ctx.drawImage(img,0,0,w,h);
+cb(c.toDataURL('image/jpeg',quality||0.7));
+};img.src=dataUrl;
+}
 function previewMomentImg(input){
 if(!input.files||!input.files[0])return;
 var reader=new FileReader();
 reader.onload=function(e){
-_momentImgData=e.target.result;
+compressImg(e.target.result,800,0.7,function(compressed){
+_momentImgData=compressed;
 var prev=document.getElementById('momentsImgPreview');
-prev.src=_momentImgData;prev.style.display='block';
+prev.src=compressed;prev.style.display='block';
+});
 };reader.readAsDataURL(input.files[0]);
 }
 function postMoment(){
@@ -2765,12 +2779,17 @@ if(!text&&!_momentImgData)return;
 var now=new Date();var ts=(now.getMonth()+1)+'/'+now.getDate()+' '+('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
 var moments=JSON.parse(localStorage.getItem('zz_moments')||'[]');
 moments.unshift({author:_momentAuthor,text:text,img:_momentImgData||null,time:ts,liked:false,likes:0,comments:[]});
-localStorage.setItem('zz_moments',JSON.stringify(moments));
+try{localStorage.setItem('zz_moments',JSON.stringify(moments))}catch(e){
+/* 存储满了，尝试去掉图片再存 */
+if(_momentImgData){moments[0].img=null;try{localStorage.setItem('zz_moments',JSON.stringify(moments))}catch(e2){showToast('存储空间不足');return}}
+else{showToast('存储空间不足');return}
+showToast('图片太大已省略，文字已发布');
+}
 ta.value='';_momentImgData=null;
 var prev=document.getElementById('momentsImgPreview');prev.style.display='none';prev.src='';
 document.getElementById('momentsImgInput').value='';
 document.getElementById('momentsComposer').classList.remove('on');
-renderMoments();showToast('已发布');
+renderMoments();if(!moments[0].img||moments[0].img)showToast('已发布');
 }
 function renderMoments(){
 var feed=document.getElementById('momentsCards');
@@ -2796,7 +2815,9 @@ var avatarContent=isZZ?'舟':'菱';
 var html='<div class="moment-head"><div class="moment-avatar">'+avatarContent+'</div><div class="moment-name">'+name+'</div><div class="moment-time">'+m.time+'</div></div>';
 if(m.img)html+='<img class="moment-img" src="'+m.img+'" ondblclick="likeMoment('+i+')">';
 if(m.text)html+='<div class="moment-text"><span class="mt-name">'+name+'</span>'+m.text.replace(/\n/g,'<br>')+'</div>';
-html+='<div class="moment-actions"><div class="moment-act'+(m.liked?' liked':'')+'" onclick="likeMoment('+i+')">'+(m.liked?'❤':'♡')+'<span class="act-count">'+(m.likes||'')+'</span></div><div class="moment-act" onclick="toggleComment('+i+')">💬<span class="act-count">'+(m.comments&&m.comments.length?m.comments.length:'')+'</span></div><div class="moment-del" onclick="delMoment('+i+')">···</div></div>';
+var heartSvg=m.liked?'<svg viewBox="0 0 24 24" width="22" height="22" fill="rgba(220,80,100,.8)" stroke="none"><path d="M12 21c-1.5 0-6.5-5-8-8C2.5 10 3 7 5.5 5.5S10.5 4 12 6c1.5-2 4-2.5 6.5-.5S21.5 10 20 13c-1.5 3-6.5 8-8 8z"/></svg>':'<svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" fill="none" stroke-width="1.5"><path d="M12 21c-1.5 0-6.5-5-8-8C2.5 10 3 7 5.5 5.5S10.5 4 12 6c1.5-2 4-2.5 6.5-.5S21.5 10 20 13c-1.5 3-6.5 8-8 8z"/></svg>';
+var commentSvg='<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>';
+html+='<div class="moment-actions"><div class="moment-act'+(m.liked?' liked':'')+'" onclick="likeMoment('+i+')">'+heartSvg+'<span class="act-count">'+(m.likes||'')+'</span></div><div class="moment-act" onclick="toggleComment('+i+')">'+commentSvg+'<span class="act-count">'+(m.comments&&m.comments.length?m.comments.length:'')+'</span></div><div class="moment-del" onclick="delMoment('+i+')">···</div></div>';
 /* 评论区 */
 html+='<div class="moment-comments" id="mCmt'+i+'">';
 if(m.likes>0)html+='<div class="moment-like-text">'+m.likes+' 个赞</div>';
