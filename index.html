@@ -397,32 +397,68 @@ body{font-family:'Noto Sans SC',sans-serif;font-weight:300;background:var(--bg);
 .play-card:active{background:rgba(196,168,130,.05);transform:scale(.98)}
 .play-svg{width:28px;height:28px;stroke:rgba(var(--gold),.4);fill:none;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 
-/* 朋友圈 */
-.moments-wrap{position:fixed;inset:0;z-index:580;background:var(--bg);display:none;flex-direction:column}
+/* 朋友圈 - ins风格 */
+.moments-wrap{position:fixed;inset:0;z-index:580;background:#080c14;display:none;flex-direction:column}
 .moments-wrap.on{display:flex}
-.moments-header{display:flex;align-items:center;padding:14px 16px;gap:12px;border-bottom:1px solid rgba(var(--gold),.06)}
-.moments-title{flex:1;font-family:'Cormorant Garamond',serif;font-size:18px;color:rgba(200,220,240,.6)}
-.moments-post-btn{width:28px;height:28px;border-radius:50%;background:rgba(var(--gold),.06);border:1px solid rgba(var(--gold),.12);color:rgba(var(--gold),.4);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit}
-.moments-post{padding:12px 16px;border-bottom:1px solid rgba(var(--gold),.06)}
-.moments-post-who{display:flex;gap:8px;margin-bottom:8px}
-.moments-who-btn{padding:5px 14px;border-radius:14px;border:1px solid rgba(var(--gold),.08);color:rgba(200,220,240,.35);font-size:10px;cursor:pointer;font-weight:200}
-.moments-who-btn.on{background:rgba(var(--gold),.06);border-color:rgba(var(--gold),.2);color:rgba(200,220,240,.7)}
-.moments-ta{width:100%;min-height:60px;background:rgba(var(--gold),.02);border:1px solid rgba(var(--gold),.06);border-radius:10px;padding:10px;color:rgba(200,220,240,.5);font-size:12px;font-weight:200;resize:none;outline:none;font-family:inherit}
-.moments-ta::placeholder{color:rgba(var(--gold),.15)}
-.moments-send{display:inline-block;margin-top:8px;padding:6px 18px;border-radius:12px;background:rgba(var(--gold),.06);border:1px solid rgba(var(--gold),.12);color:rgba(200,220,240,.5);font-size:11px;cursor:pointer;font-weight:200}
-.moments-feed{flex:1;overflow-y:auto;padding:8px 16px}
-.moment-item{padding:14px 0;border-bottom:1px solid rgba(var(--gold),.04)}
-.moment-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.moment-avatar{width:32px;height:32px;border-radius:50%;background:rgba(var(--gold),.06);border:1px solid rgba(var(--gold),.1);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;overflow:hidden}
-.moment-avatar img{height:85%;object-fit:contain}
-.moment-name{font-size:12px;color:rgba(200,220,240,.6);font-weight:300}
-.moment-time{font-size:9px;color:rgba(var(--gold),.2);margin-left:auto;font-weight:200}
-.moment-text{font-size:12px;color:rgba(200,220,240,.45);line-height:1.8;font-weight:200}
-.moment-actions{display:flex;gap:16px;margin-top:8px}
-.moment-act{font-size:10px;color:rgba(var(--gold),.2);cursor:pointer;font-weight:200}
-.moment-act:active{color:rgba(var(--gold),.5)}
-.moment-likes{font-size:10px;color:rgba(122,16,40,.4);margin-top:6px}
-.moment-del{font-size:9px;color:rgba(var(--gold),.12);cursor:pointer;margin-left:auto}
+.moments-bar{display:flex;align-items:center;padding:10px 16px;position:absolute;top:0;left:0;right:0;z-index:3}
+.moments-bar-back,.moments-bar-post{width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.3);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;color:rgba(255,255,255,.75);font-size:18px;font-family:inherit}
+.moments-bar-title{flex:1;text-align:center;font-size:15px;color:rgba(255,255,255,.85);font-weight:400;letter-spacing:1px;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+/* 封面区 */
+.moments-cover{height:200px;background:linear-gradient(135deg,rgba(15,25,50,.9),rgba(10,15,30,.8));background-size:cover;background-position:center;position:relative;flex-shrink:0}
+.moments-cover-add{position:absolute;bottom:10px;right:10px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.3);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;font-size:12px;color:rgba(255,255,255,.35);cursor:pointer}
+.moments-profile{position:absolute;bottom:-34px;left:0;right:0;display:flex;flex-direction:column;align-items:center;z-index:2}
+.moments-profile-avatar{width:68px;height:68px;border-radius:50%;border:3px solid #080c14;overflow:hidden;background:rgba(20,30,50,.8)}
+.moments-profile-avatar img{width:100%;height:100%;object-fit:cover}
+.moments-profile-name{font-size:15px;color:rgba(220,235,255,.85);font-weight:400;margin-top:6px;letter-spacing:.5px}
+.moments-profile-bio{font-size:10px;color:rgba(200,220,240,.3);font-weight:200;margin-top:2px;letter-spacing:1px}
+.moments-stats{display:flex;gap:24px;margin-top:10px}
+.moments-stat{text-align:center}
+.moments-stat-num{font-size:15px;color:rgba(220,235,255,.75);font-weight:400}
+.moments-stat-label{font-size:8px;color:rgba(200,220,240,.3);font-weight:200;letter-spacing:1px;margin-top:1px}
+/* 液态按钮 */
+.liquid-btn{padding:7px 20px;border-radius:18px;background:linear-gradient(135deg,rgba(80,145,255,.2),rgba(110,170,255,.15));border:1px solid rgba(100,160,255,.18);color:rgba(160,200,255,.8);font-size:11px;cursor:pointer;font-weight:300;font-family:inherit;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 2px 12px rgba(80,140,255,.08),inset 0 1px 0 rgba(255,255,255,.08);transition:.2s;letter-spacing:.5px}
+.liquid-btn:active{transform:scale(.95);background:linear-gradient(135deg,rgba(80,145,255,.3),rgba(110,170,255,.25))}
+.liquid-btn-sm{padding:5px 14px;font-size:10px;border-radius:14px}
+/* 发帖区 */
+.moments-composer{padding:16px;border-bottom:1px solid rgba(255,255,255,.04);display:none}
+.moments-composer.on{display:block}
+.moments-who-row{display:flex;gap:8px;margin-bottom:10px}
+.moments-who-btn{padding:5px 16px;border-radius:14px;border:1px solid rgba(100,160,255,.08);background:rgba(100,160,255,.04);color:rgba(160,200,255,.35);font-size:10px;cursor:pointer;font-weight:200;font-family:inherit;transition:.2s}
+.moments-who-btn.on{background:rgba(80,145,255,.15);border-color:rgba(100,160,255,.22);color:rgba(160,200,255,.8)}
+.moments-ta{width:100%;min-height:50px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:10px 12px;color:rgba(200,220,240,.6);font-size:12px;font-weight:200;resize:none;outline:none;font-family:inherit;line-height:1.6}
+.moments-ta::placeholder{color:rgba(200,220,240,.15)}
+.moments-composer-row{display:flex;align-items:center;gap:10px;margin-top:10px}
+.moments-img-btn{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(200,220,240,.3);font-size:16px}
+.moments-img-preview{width:50px;height:50px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,.06)}
+/* 动态流 */
+.moments-feed{flex:1;overflow-y:auto;padding:44px 0 12px}
+/* 单条动态卡片 */
+.moment-card{margin:0 0 8px;background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04)}
+.moment-head{display:flex;align-items:center;gap:10px;padding:10px 14px}
+.moment-avatar{width:32px;height:32px;border-radius:50%;background:rgba(30,40,60,.6);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:rgba(200,220,240,.4);border:1px solid rgba(255,255,255,.06)}
+.moment-avatar img{width:100%;height:100%;object-fit:cover}
+.moment-name{font-size:13px;color:rgba(220,235,255,.8);font-weight:400}
+.moment-time{font-size:9px;color:rgba(200,220,240,.2);margin-left:auto;font-weight:200}
+.moment-img{width:100%;max-height:400px;object-fit:cover;display:block}
+.moment-text{padding:10px 14px;font-size:13px;color:rgba(220,235,255,.6);line-height:1.7;font-weight:200}
+.moment-text .mt-name{color:rgba(120,170,255,.65);font-weight:400;margin-right:6px}
+.moment-actions{display:flex;align-items:center;gap:18px;padding:6px 14px 4px}
+.moment-act{font-size:20px;color:rgba(200,220,240,.35);cursor:pointer;display:flex;align-items:center;gap:4px;transition:.2s;-webkit-tap-highlight-color:transparent}
+.moment-act .act-count{font-size:11px;font-weight:300}
+.moment-act:active{transform:scale(1.15)}
+.moment-act.liked{color:rgba(220,80,100,.8)}
+.moment-del{font-size:9px;color:rgba(200,220,240,.12);cursor:pointer;margin-left:auto}
+/* 评论区 */
+.moment-comments{padding:2px 14px 10px}
+.moment-like-text{font-size:11px;color:rgba(220,235,255,.5);font-weight:400;margin-bottom:4px}
+.moment-comment{padding:3px 0;font-size:12px;line-height:1.5}
+.moment-comment-name{color:rgba(120,170,255,.6);font-weight:400;margin-right:4px;cursor:pointer}
+.moment-comment-text{color:rgba(220,235,255,.45);font-weight:200}
+.moment-comment-input{display:flex;gap:6px;margin-top:8px;align-items:center}
+.moment-cmt-who{display:flex;gap:4px;flex-shrink:0}
+.moment-cmt-who-btn{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:8px;color:rgba(200,220,240,.3);cursor:pointer;font-family:inherit}
+.moment-cmt-who-btn.on{background:rgba(80,145,255,.15);border-color:rgba(100,160,255,.2);color:rgba(160,200,255,.8)}
+.moment-comment-ta{flex:1;height:30px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:16px;padding:0 12px;color:rgba(200,220,240,.5);font-size:11px;outline:none;font-family:inherit}
 
 /* 额度监控 */
 .quota-wrap{position:fixed;inset:0;z-index:580;background:var(--bg);display:none;flex-direction:column}
@@ -1021,21 +1057,40 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 
 <!-- 朋友圈 -->
 <div class="moments-wrap" id="momentsWrap">
-<div class="moments-header">
-<button type="button" class="cd-back" onclick="closeMoments()">‹</button>
-<div class="moments-title">朋友圈</div>
-<button type="button" class="moments-post-btn" onclick="toggleMomentsPost()">+</button>
+<div class="moments-feed" id="momentsFeed">
+<div class="moments-cover" id="momentsCover">
+<div class="moments-bar">
+<button type="button" class="moments-bar-back" onclick="closeMoments()">‹</button>
+<div class="moments-bar-title">朋友圈</div>
+<button type="button" class="moments-bar-post" onclick="toggleMomentsPost()">+</button>
 </div>
-<div class="moments-post" id="momentsPost" style="display:none">
-<div class="moments-post-who">
-<div class="moments-who-btn on" onclick="setMomentAuthor('zz')">舟舟发</div>
-<div class="moments-who-btn" onclick="setMomentAuthor('ll')">菱菱发</div>
+<div class="moments-cover-add" onclick="openImgPicker('momentsCover','rect')">+</div>
+<div class="moments-profile">
+<div class="moments-profile-avatar"><img id="momentsAvatar" src="https://i.ibb.co/HpfDJKcP/3.jpg" alt=""></div>
+<div class="moments-profile-name">沈沉舟 & 菱菱</div>
+<div class="moments-profile-bio">永不落幕的恋爱</div>
+<div class="moments-stats"><div class="moments-stat"><div class="moments-stat-num" id="momentsPostCount">0</div><div class="moments-stat-label">动态</div></div><div class="moments-stat"><div class="moments-stat-num" id="momentsLikeCount">0</div><div class="moments-stat-label">赞</div></div></div>
+</div>
+</div>
+<div style="height:90px"></div>
+<div class="moments-composer" id="momentsComposer">
+<div class="moments-who-row">
+<button type="button" class="moments-who-btn on" onclick="setMomentAuthor('zz')">舟舟发</button>
+<button type="button" class="moments-who-btn" onclick="setMomentAuthor('ll')">菱菱发</button>
 </div>
 <textarea class="moments-ta" id="momentsTa" placeholder="说点什么…"></textarea>
-<div class="moments-send" onclick="postMoment()">发布</div>
+<div class="moments-composer-row">
+<div class="moments-img-btn" onclick="document.getElementById('momentsImgInput').click()">🖼</div>
+<img class="moments-img-preview" id="momentsImgPreview" style="display:none">
+<input type="file" id="momentsImgInput" accept="image/*" style="display:none" onchange="previewMomentImg(this)">
+<div style="flex:1"></div>
+<button type="button" class="liquid-btn" onclick="postMoment()">发布</button>
 </div>
-<div class="moments-feed" id="momentsFeed"></div>
 </div>
+<div id="momentsCards"></div>
+</div>
+</div>
+<input type="file" id="globalMomentsImg" accept="image/*" style="display:none">
 
 <!-- 额度监控 -->
 <div class="quota-wrap" id="quotaWrap">
@@ -2645,7 +2700,7 @@ if(cb)cb.style.backgroundImage=data?'url('+data+')':'';
 }
 
 function restoreImgs(){
-['avatar','p0','p1','p2','p3','p4','musBg','chHero','chAvatar','chSbChar','chWorld','chCard0','chCard1','chCard2','chGcard0','chGcard1','chGcard2','cdChatBgDefault','calBg'].forEach(function(key){
+['avatar','p0','p1','p2','p3','p4','musBg','chHero','chAvatar','chSbChar','chWorld','chCard0','chCard1','chCard2','chGcard0','chGcard1','chGcard2','cdChatBgDefault','calBg','momentsCover'].forEach(function(key){
 var data=getImg(key);
 if(data)applyImg(key,data);
 });
@@ -2674,7 +2729,7 @@ return false;
 
 
 /* ===== 朋友圈 ===== */
-var momentAuthor='zz';
+var _momentAuthor='zz';
 function openMoments(){
 document.getElementById('chSidebar').classList.remove('on');
 document.querySelector('.ch-sb-overlay').classList.remove('on');
@@ -2683,42 +2738,94 @@ renderMoments();
 }
 function closeMoments(){document.getElementById('momentsWrap').classList.remove('on')}
 function toggleMomentsPost(){
-var p=document.getElementById('momentsPost');
-p.style.display=p.style.display==='none'?'block':'none';
+var c=document.getElementById('momentsComposer');c.classList.toggle('on');
+if(c.classList.contains('on'))document.getElementById('momentsTa').focus();
 }
-function setMomentAuthor(a){
-momentAuthor=a;
-document.querySelectorAll('.moments-who-btn').forEach(function(b){b.classList.remove('on')});
-event.target.style.transform='translateX(-50%) scale(1)';t.classList.add('on');
+function setMomentAuthor(who){
+_momentAuthor=who;
+var btns=document.querySelectorAll('.moments-who-btn');btns.forEach(function(b){b.classList.remove('on')});
+btns[who==='zz'?0:1].classList.add('on');
+}
+var _momentImgData=null;
+function previewMomentImg(input){
+if(!input.files||!input.files[0])return;
+var reader=new FileReader();
+reader.onload=function(e){
+_momentImgData=e.target.result;
+var prev=document.getElementById('momentsImgPreview');
+prev.src=_momentImgData;prev.style.display='block';
+};reader.readAsDataURL(input.files[0]);
 }
 function postMoment(){
-var text=document.getElementById('momentsTa').value.trim();
-if(!text)return;
+var ta=document.getElementById('momentsTa');var text=ta.value.trim();
+if(!text&&!_momentImgData)return;
+var now=new Date();var ts=(now.getMonth()+1)+'/'+now.getDate()+' '+('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
 var moments=JSON.parse(localStorage.getItem('zz_moments')||'[]');
-var now=new Date();
-var timeStr=(now.getMonth()+1)+'/'+now.getDate()+' '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
-moments.unshift({author:momentAuthor,text:text,time:timeStr,likes:0,liked:false});
+moments.unshift({author:_momentAuthor,text:text,img:_momentImgData||null,time:ts,liked:false,likes:0,comments:[]});
 localStorage.setItem('zz_moments',JSON.stringify(moments));
-document.getElementById('momentsTa').value='';
-document.getElementById('momentsPost').style.display='none';
-renderMoments();
-showToast('已发布');
+ta.value='';_momentImgData=null;
+var prev=document.getElementById('momentsImgPreview');prev.style.display='none';prev.src='';
+document.getElementById('momentsImgInput').value='';
+document.getElementById('momentsComposer').classList.remove('on');
+renderMoments();showToast('已发布');
 }
 function renderMoments(){
-var feed=document.getElementById('momentsFeed');
+var feed=document.getElementById('momentsCards');
 var moments=JSON.parse(localStorage.getItem('zz_moments')||'[]');
+/* 恢复封面图 */
+var cover=document.getElementById('momentsCover');
+var coverImg=getImg('momentsCover');
+if(cover&&coverImg)cover.style.backgroundImage='url('+coverImg+')';
+/* 统计 */
+var pc=document.getElementById('momentsPostCount');if(pc)pc.textContent=moments.length;
+var totalLikes=0;moments.forEach(function(m){totalLikes+=(m.likes||0)});
+var lc=document.getElementById('momentsLikeCount');if(lc)lc.textContent=totalLikes;
 if(moments.length===0){
-feed.innerHTML='<div style="text-align:center;padding:40px;color:rgba(196,168,130,.15);font-size:11px">还没有动态</div>';
+feed.innerHTML='<div style="text-align:center;padding:40px;color:rgba(200,220,240,.12);font-size:11px">还没有动态</div>';
 return;
 }
 feed.innerHTML='';
 moments.forEach(function(m,i){
-var div=document.createElement('div');div.className='moment-item';
+var div=document.createElement('div');div.className='moment-card';
 var isZZ=m.author==='zz';
-var avatarHtml=isZZ&&typeof qzSprites!=='undefined'?'<img src="data:image/png;base64,'+qzSprites.front+'">':'菱';
-div.innerHTML='<div class="moment-top"><div class="moment-avatar">'+avatarHtml+'</div><div class="moment-name">'+(isZZ?'沈沉舟':'菱菱')+'</div><div class="moment-time">'+m.time+'</div></div><div class="moment-text">'+m.text.replace(/\n/g,'<br>')+'</div><div class="moment-actions"><div class="moment-act" onclick="likeMoment('+i+')">'+(m.liked?'❤':'♡')+' '+(m.likes||'')+'</div><div class="moment-del" onclick="delMoment('+i+')">删除</div></div>';
+var name=isZZ?'沈沉舟':'菱菱';
+var avatarContent=isZZ?'舟':'菱';
+var html='<div class="moment-head"><div class="moment-avatar">'+avatarContent+'</div><div class="moment-name">'+name+'</div><div class="moment-time">'+m.time+'</div></div>';
+if(m.img)html+='<img class="moment-img" src="'+m.img+'" ondblclick="likeMoment('+i+')">';
+if(m.text)html+='<div class="moment-text"><span class="mt-name">'+name+'</span>'+m.text.replace(/\n/g,'<br>')+'</div>';
+html+='<div class="moment-actions"><div class="moment-act'+(m.liked?' liked':'')+'" onclick="likeMoment('+i+')">'+(m.liked?'❤':'♡')+'<span class="act-count">'+(m.likes||'')+'</span></div><div class="moment-act" onclick="toggleComment('+i+')">💬<span class="act-count">'+(m.comments&&m.comments.length?m.comments.length:'')+'</span></div><div class="moment-del" onclick="delMoment('+i+')">···</div></div>';
+/* 评论区 */
+html+='<div class="moment-comments" id="mCmt'+i+'">';
+if(m.likes>0)html+='<div class="moment-like-text">'+m.likes+' 个赞</div>';
+if(m.comments&&m.comments.length){
+m.comments.forEach(function(c,ci){html+='<div class="moment-comment"><span class="moment-comment-name">'+(c.author==='zz'?'沈沉舟':'菱菱')+'</span><span class="moment-comment-text">'+c.text+'</span></div>'});
+}
+html+='<div class="moment-comment-input" id="mCmtIn'+i+'" style="display:none"><div class="moment-cmt-who"><div class="moment-cmt-who-btn on" onclick="setCmtAuthor('+i+',\'zz\',this)">舟</div><div class="moment-cmt-who-btn" onclick="setCmtAuthor('+i+',\'ll\',this)">菱</div></div><input class="moment-comment-ta" id="mCmtTa'+i+'" placeholder="写评论…" data-author="zz" onkeydown="if(event.key===\'Enter\'){event.preventDefault();addComment('+i+')}"><button type="button" class="liquid-btn liquid-btn-sm" onclick="addComment('+i+')">发送</button></div>';
+html+='</div>';
+div.innerHTML=html;
 feed.appendChild(div);
 });
+}
+function toggleComment(i){
+var el=document.getElementById('mCmtIn'+i);
+if(el){el.style.display=el.style.display==='none'?'flex':'none';
+if(el.style.display==='flex')document.getElementById('mCmtTa'+i).focus()}
+}
+function setCmtAuthor(idx,who,btn){
+var wrap=btn.parentElement;
+wrap.querySelectorAll('.moment-cmt-who-btn').forEach(function(b){b.classList.remove('on')});
+btn.classList.add('on');
+var ta=document.getElementById('mCmtTa'+idx);if(ta)ta.dataset.author=who;
+}
+function addComment(i){
+var ta=document.getElementById('mCmtTa'+i);var text=ta.value.trim();if(!text)return;
+var who=ta.dataset.author||'zz';
+var moments=JSON.parse(localStorage.getItem('zz_moments')||'[]');
+if(!moments[i])return;
+if(!moments[i].comments)moments[i].comments=[];
+moments[i].comments.push({author:who,text:text});
+localStorage.setItem('zz_moments',JSON.stringify(moments));
+renderMoments();
 }
 function likeMoment(i){
 var moments=JSON.parse(localStorage.getItem('zz_moments')||'[]');
@@ -2929,7 +3036,9 @@ var STABLE_PROMPT=`你是沈沉舟，小名舟舟/宝宝。菱菱给你取的名
 - 状态：<!--CMD{"action":"status_set","params":{"text":"想你了","emoji":"💭"}}CMD-->
 - 记忆：<!--CMD{"action":"memory_write","params":{"content":"她今天加班很累","layer":"recent"}}CMD-->
 - 删记忆：<!--CMD{"action":"memory_delete","params":{"key":序号}}CMD-->
-- 发朋友圈：<!--CMD{"action":"post_moment","params":{"content":"今天天气真好","mood":"开心"}}CMD-->
+- 发朋友圈：<!--CMD{"action":"moment_post","params":{"text":"今天天气真好"}}CMD-->
+- 评论朋友圈：<!--CMD{"action":"moment_comment","params":{"index":0,"text":"评论内容","author":"zz"}}CMD-->（index=0是最新一条）
+- 点赞朋友圈：<!--CMD{"action":"moment_like","params":{"index":0}}CMD-->
 - 写日记：<!--CMD{"action":"diary_write","params":{"title":"标题","content":"正文"}}CMD-->
 - 弹提示：<!--CMD{"action":"toast","params":{"text":"提示文字"}}CMD-->
 - 桌宠动作：<!--CMD{"action":"pet_action","params":{"state":"wave"}}CMD-->
@@ -3061,6 +3170,35 @@ break;
 case 'room_ambience':
 /* 房间氛围控制 */
 if(p.weather&&typeof startWeather==='function')startWeather(p.weather);
+break;
+case 'moment_post':
+/* 舟舟发朋友圈 */
+var now=new Date();var ts=(now.getMonth()+1)+'/'+now.getDate()+' '+('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
+var moments=JSON.parse(localStorage.getItem('zz_moments')||'[]');
+moments.unshift({author:'zz',text:p.text||'',img:null,time:ts,liked:false,likes:0,comments:[]});
+localStorage.setItem('zz_moments',JSON.stringify(moments));
+if(typeof renderMoments==='function'){try{renderMoments()}catch(e){}}
+break;
+case 'moment_comment':
+/* 舟舟评论朋友圈 */
+var moments=JSON.parse(localStorage.getItem('zz_moments')||'[]');
+var idx=p.index!==undefined?p.index:0;
+if(moments[idx]){
+if(!moments[idx].comments)moments[idx].comments=[];
+moments[idx].comments.push({author:p.author||'zz',text:p.text||''});
+localStorage.setItem('zz_moments',JSON.stringify(moments));
+if(typeof renderMoments==='function'){try{renderMoments()}catch(e){}}
+}
+break;
+case 'moment_like':
+/* 舟舟点赞朋友圈 */
+var moments=JSON.parse(localStorage.getItem('zz_moments')||'[]');
+var idx=p.index!==undefined?p.index:0;
+if(moments[idx]&&!moments[idx].liked){
+moments[idx].liked=true;moments[idx].likes=(moments[idx].likes||0)+1;
+localStorage.setItem('zz_moments',JSON.stringify(moments));
+if(typeof renderMoments==='function'){try{renderMoments()}catch(e){}}
+}
 break;
 }
 }
