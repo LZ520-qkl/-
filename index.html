@@ -405,7 +405,7 @@ body{font-family:'Noto Sans SC',sans-serif;font-weight:300;background:var(--bg);
 .moments-bar-title{flex:1;text-align:center;font-size:15px;color:rgba(255,255,255,.85);font-weight:400;letter-spacing:1px;text-shadow:0 1px 6px rgba(0,0,0,.5)}
 /* 封面区 */
 .moments-cover{height:200px;background:linear-gradient(135deg,rgba(15,25,50,.9),rgba(10,15,30,.8));background-size:cover;background-position:center;position:relative;flex-shrink:0}
-.moments-cover-add{position:absolute;bottom:10px;right:10px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.3);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;font-size:12px;color:rgba(255,255,255,.35);cursor:pointer}
+.moments-cover-add{position:absolute;bottom:10px;right:10px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.3);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;font-size:12px;color:rgba(255,255,255,.35);cursor:pointer;z-index:3}
 .moments-profile{position:absolute;bottom:-34px;left:0;right:0;display:flex;flex-direction:column;align-items:center;z-index:2}
 .moments-profile-avatar{width:68px;height:68px;border-radius:50%;border:3px solid #080c14;overflow:hidden;background:rgba(20,30,50,.8)}
 .moments-profile-avatar img{width:100%;height:100%;object-fit:cover}
@@ -428,7 +428,7 @@ body{font-family:'Noto Sans SC',sans-serif;font-weight:300;background:var(--bg);
 .moments-ta{width:100%;min-height:50px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:10px 12px;color:rgba(200,220,240,.6);font-size:12px;font-weight:200;resize:none;outline:none;font-family:inherit;line-height:1.6}
 .moments-ta::placeholder{color:rgba(200,220,240,.15)}
 .moments-composer-row{display:flex;align-items:center;gap:10px;margin-top:10px}
-.moments-img-btn{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(200,220,240,.3);font-size:16px}
+.moments-img-btn{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(200,220,240,.3);font-size:16px;font-family:inherit;-webkit-appearance:none;padding:0}
 .moments-img-preview{width:50px;height:50px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,.06)}
 /* 动态流 */
 .moments-feed{flex:1;overflow-y:auto;padding:44px 0 12px}
@@ -1066,7 +1066,7 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 </div>
 <div class="moments-cover-add" onclick="openImgPicker('momentsCover','rect')">+</div>
 <div class="moments-profile">
-<div class="moments-profile-avatar"><img id="momentsAvatar" src="https://i.ibb.co/HpfDJKcP/3.jpg" alt=""></div>
+<div class="moments-profile-avatar" onclick="openImgPicker('momentsAvatar','circle')" style="cursor:pointer"><img id="momentsAvatar" src="https://i.ibb.co/HpfDJKcP/3.jpg" alt=""></div>
 <div class="moments-profile-name">沈沉舟 & 菱菱</div>
 <div class="moments-profile-bio">永不落幕的恋爱</div>
 <div class="moments-stats"><div class="moments-stat"><div class="moments-stat-num" id="momentsPostCount">0</div><div class="moments-stat-label">动态</div></div><div class="moments-stat"><div class="moments-stat-num" id="momentsLikeCount">0</div><div class="moments-stat-label">赞</div></div></div>
@@ -1080,7 +1080,7 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 </div>
 <textarea class="moments-ta" id="momentsTa" placeholder="说点什么…"></textarea>
 <div class="moments-composer-row">
-<div class="moments-img-btn" onclick="document.getElementById('momentsImgInput').click()">🖼</div>
+<button type="button" class="moments-img-btn" onclick="document.getElementById('momentsImgInput').click()" ontouchstart="">🖼</button>
 <img class="moments-img-preview" id="momentsImgPreview" style="display:none">
 <input type="file" id="momentsImgInput" accept="image/*" style="display:none" onchange="previewMomentImg(this)">
 <div style="flex:1"></div>
@@ -2597,6 +2597,9 @@ else{el.style.backgroundImage=''}
 }else if(key==='calBg'){
 var el=document.getElementById('calBgEl');
 if(el)el.style.backgroundImage=data?'url('+data+')':'';
+}else if(key==='momentsAvatar'){
+var el=document.getElementById('momentsAvatar');
+if(el&&data){el.src=data;el.className='custom'}
 }else if(key.match(/^p\d$/)){
 var el=document.getElementById(key+'Bg');
 if(el)el.style.backgroundImage=data?'url('+data+')':'';
@@ -2700,7 +2703,7 @@ if(cb)cb.style.backgroundImage=data?'url('+data+')':'';
 }
 
 function restoreImgs(){
-['avatar','p0','p1','p2','p3','p4','musBg','chHero','chAvatar','chSbChar','chWorld','chCard0','chCard1','chCard2','chGcard0','chGcard1','chGcard2','cdChatBgDefault','calBg','momentsCover'].forEach(function(key){
+['avatar','p0','p1','p2','p3','p4','musBg','chHero','chAvatar','chSbChar','chWorld','chCard0','chCard1','chCard2','chGcard0','chGcard1','chGcard2','cdChatBgDefault','calBg','momentsCover','momentsAvatar'].forEach(function(key){
 var data=getImg(key);
 if(data)applyImg(key,data);
 });
