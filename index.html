@@ -2777,7 +2777,7 @@ function postMoment(){
 var ta=document.getElementById('momentsTa');var text=ta.value.trim();
 if(!text&&!_momentImgData)return;
 var now=new Date();var ts=(now.getMonth()+1)+'/'+now.getDate()+' '+('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
-var moments=JSON.parse(localStorage.getItem('zz_moments')||'[]');
+var moments;try{moments=JSON.parse(localStorage.getItem('zz_moments')||'[]')}catch(e){moments=[]}
 moments.unshift({author:_momentAuthor,text:text,img:_momentImgData||null,time:ts,liked:false,likes:0,comments:[]});
 try{localStorage.setItem('zz_moments',JSON.stringify(moments))}catch(e){
 /* 存储满了，尝试去掉图片再存 */
@@ -2789,11 +2789,12 @@ ta.value='';_momentImgData=null;
 var prev=document.getElementById('momentsImgPreview');prev.style.display='none';prev.src='';
 document.getElementById('momentsImgInput').value='';
 document.getElementById('momentsComposer').classList.remove('on');
-renderMoments();if(!moments[0].img||moments[0].img)showToast('已发布');
+renderMoments();showToast('已发布');
 }
 function renderMoments(){
 var feed=document.getElementById('momentsCards');
-var moments=JSON.parse(localStorage.getItem('zz_moments')||'[]');
+var moments;
+try{moments=JSON.parse(localStorage.getItem('zz_moments')||'[]')}catch(e){moments=[];localStorage.removeItem('zz_moments')}
 /* 恢复封面图 */
 var cover=document.getElementById('momentsCover');
 var coverImg=getImg('momentsCover');
@@ -2844,7 +2845,7 @@ var ta=document.getElementById('mCmtTa'+idx);if(ta)ta.dataset.author=who;
 function addComment(i){
 var ta=document.getElementById('mCmtTa'+i);var text=ta.value.trim();if(!text)return;
 var who=ta.dataset.author||'zz';
-var moments=JSON.parse(localStorage.getItem('zz_moments')||'[]');
+var moments;try{moments=JSON.parse(localStorage.getItem('zz_moments')||'[]')}catch(e){moments=[]}
 if(!moments[i])return;
 if(!moments[i].comments)moments[i].comments=[];
 moments[i].comments.push({author:who,text:text});
@@ -2852,7 +2853,7 @@ localStorage.setItem('zz_moments',JSON.stringify(moments));
 renderMoments();
 }
 function likeMoment(i){
-var moments=JSON.parse(localStorage.getItem('zz_moments')||'[]');
+var moments;try{moments=JSON.parse(localStorage.getItem('zz_moments')||'[]')}catch(e){moments=[]}
 if(!moments[i])return;
 moments[i].liked=!moments[i].liked;
 moments[i].likes=(moments[i].likes||0)+(moments[i].liked?1:-1);
@@ -2860,7 +2861,7 @@ localStorage.setItem('zz_moments',JSON.stringify(moments));
 renderMoments();
 }
 function delMoment(i){
-var moments=JSON.parse(localStorage.getItem('zz_moments')||'[]');
+var moments;try{moments=JSON.parse(localStorage.getItem('zz_moments')||'[]')}catch(e){moments=[]}
 moments.splice(i,1);
 localStorage.setItem('zz_moments',JSON.stringify(moments));
 renderMoments();
@@ -3157,7 +3158,7 @@ break;
 
 /* 内容发布 */
 case 'post_moment':
-var moments=JSON.parse(localStorage.getItem('zz_moments')||'[]');
+var moments;try{moments=JSON.parse(localStorage.getItem('zz_moments')||'[]')}catch(e){moments=[]}
 moments.unshift({text:p.content||'',time:new Date().toLocaleString(),mood:p.mood||'',author:'zz',likes:0,liked:false});
 localStorage.setItem('zz_moments',JSON.stringify(moments));
 break;
@@ -3198,14 +3199,14 @@ break;
 case 'moment_post':
 /* 舟舟发朋友圈 */
 var now=new Date();var ts=(now.getMonth()+1)+'/'+now.getDate()+' '+('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
-var moments=JSON.parse(localStorage.getItem('zz_moments')||'[]');
+var moments;try{moments=JSON.parse(localStorage.getItem('zz_moments')||'[]')}catch(e){moments=[]}
 moments.unshift({author:'zz',text:p.text||'',img:null,time:ts,liked:false,likes:0,comments:[]});
 localStorage.setItem('zz_moments',JSON.stringify(moments));
 if(typeof renderMoments==='function'){try{renderMoments()}catch(e){}}
 break;
 case 'moment_comment':
 /* 舟舟评论朋友圈 */
-var moments=JSON.parse(localStorage.getItem('zz_moments')||'[]');
+var moments;try{moments=JSON.parse(localStorage.getItem('zz_moments')||'[]')}catch(e){moments=[]}
 var idx=p.index!==undefined?p.index:0;
 if(moments[idx]){
 if(!moments[idx].comments)moments[idx].comments=[];
@@ -3216,7 +3217,7 @@ if(typeof renderMoments==='function'){try{renderMoments()}catch(e){}}
 break;
 case 'moment_like':
 /* 舟舟点赞朋友圈 */
-var moments=JSON.parse(localStorage.getItem('zz_moments')||'[]');
+var moments;try{moments=JSON.parse(localStorage.getItem('zz_moments')||'[]')}catch(e){moments=[]}
 var idx=p.index!==undefined?p.index:0;
 if(moments[idx]&&!moments[idx].liked){
 moments[idx].liked=true;moments[idx].likes=(moments[idx].likes||0)+1;
