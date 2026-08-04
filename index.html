@@ -2279,9 +2279,51 @@ select.key-api-input option{background:#0e1b24;color:rgba(200,220,240,.6)}
 <div class="cd-gal" id="cdGalWrap"></div>
 </div>
 </div>
-<div class="cd-pan" id="cdPan1"><div class="cd-placeholder">剧情记忆区<br><small>即将开放</small></div></div>
-<div class="cd-pan" id="cdPan2"><div class="cd-placeholder">角色设定区<br><small>即将开放</small></div></div>
-<div class="cd-pan" id="cdPan3"><div class="cd-placeholder">语音配置区<br><small>即将开放</small></div></div>
+<div class="cd-pan" id="cdPan1">
+<div class="cd-sec" style="padding:16px">
+<div class="cd-stitle">剧情记忆 <span>STORY MEMORY</span></div>
+<ul class="cd-mem-list" id="cdMemList2"></ul>
+<div style="display:flex;gap:8px;margin-top:12px">
+<input type="text" id="cdMemInput" placeholder="手动添加记忆…" style="flex:1;padding:8px 12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:10px;color:var(--text2);font-size:11px;outline:none;font-family:inherit">
+<button type="button" class="liquid-btn liquid-btn-sm" onclick="addManualMem()">添加</button>
+</div>
+<button type="button" style="margin-top:10px;font-size:9px;color:rgba(200,100,100,.4);background:none;border:none;cursor:pointer;font-family:inherit" onclick="if(confirm('清空此角色的所有记忆？')){localStorage.removeItem('zz_ch_mem_'+_cdIdx);renderCdMemList();showToast('已清空')}">清空记忆</button>
+</div>
+</div>
+<div class="cd-pan" id="cdPan2">
+<div class="cd-sec" style="padding:16px">
+<div class="cd-stitle">角色详细设定 <span>CHARACTER SETTING</span></div>
+<div style="font-size:10px;color:var(--text3);margin:8px 0 10px;font-weight:200">这里的内容会在角色聊天时传给AI</div>
+<div style="margin-bottom:10px"><div style="font-size:10px;color:var(--text3);margin-bottom:4px">角色台词</div><input type="text" id="cdQuoteEdit" placeholder="写一句角色台词" onblur="cdSave('quote',this.value)" style="width:100%;padding:8px 10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:10px;color:var(--text2);font-size:11px;outline:none;font-family:inherit"></div>
+<div style="margin-bottom:10px"><div style="font-size:10px;color:var(--text3);margin-bottom:4px">性格描述</div><textarea id="cdPersonality" placeholder="角色的性格特征、说话风格…" onblur="cdSave('personality',this.value)" style="width:100%;min-height:80px;padding:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:10px;color:var(--text2);font-size:11px;outline:none;font-family:inherit;resize:none;line-height:1.6"></textarea></div>
+<div><div style="font-size:10px;color:var(--text3);margin-bottom:4px">开场白</div><textarea id="cdGreeting" placeholder="角色在对话开始时说的第一句话" onblur="cdSave('greeting',this.value)" style="width:100%;min-height:60px;padding:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:10px;color:var(--text2);font-size:11px;outline:none;font-family:inherit;resize:none;line-height:1.6"></textarea></div>
+</div>
+</div>
+<div class="cd-pan" id="cdPan3">
+<div class="cd-sec" style="padding:16px">
+<div class="cd-stitle">语音配置 <span>VOICE CONFIG</span></div>
+<div style="margin-top:12px">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+<span style="font-size:12px;color:var(--text2);font-weight:200">角色语音朗读</span>
+<div id="voiceToggle" onclick="toggleCharVoice()" style="width:42px;height:24px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);cursor:pointer;position:relative;transition:.3s"><div id="voiceToggleDot" style="width:20px;height:20px;border-radius:50%;background:rgba(200,220,240,.3);position:absolute;top:1px;left:1px;transition:.3s"></div></div>
+</div>
+<div style="margin-bottom:12px">
+<div style="font-size:10px;color:var(--text3);margin-bottom:6px;letter-spacing:1px">音色</div>
+<select id="voiceSelect" onchange="saveCharVoice()" style="width:100%;padding:8px 10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;color:var(--text2);font-size:11px;font-family:inherit;outline:none;-webkit-appearance:none"></select>
+</div>
+<div style="margin-bottom:12px">
+<div style="font-size:10px;color:var(--text3);margin-bottom:6px;letter-spacing:1px">语速 <span id="voiceRateVal" style="color:var(--text2)">1.0</span></div>
+<input type="range" id="voiceRate" min="50" max="200" value="100" oninput="document.getElementById('voiceRateVal').textContent=(this.value/100).toFixed(1);saveCharVoice()" style="width:100%;accent-color:rgba(100,160,255,.6)">
+</div>
+<div style="margin-bottom:16px">
+<div style="font-size:10px;color:var(--text3);margin-bottom:6px;letter-spacing:1px">音调 <span id="voicePitchVal" style="color:var(--text2)">1.0</span></div>
+<input type="range" id="voicePitch" min="50" max="200" value="100" oninput="document.getElementById('voicePitchVal').textContent=(this.value/100).toFixed(1);saveCharVoice()" style="width:100%;accent-color:rgba(100,160,255,.6)">
+</div>
+<button type="button" class="liquid-btn" onclick="testCharVoice()" style="width:100%">试听语音</button>
+<div style="font-size:9px;color:var(--text4);margin-top:10px;line-height:1.6;font-weight:200">开启后，角色的回复会自动朗读。音色取决于系统可用的TTS语音包。</div>
+</div>
+</div>
+</div>
 </div>
 <!-- 角色聊天页 -->
 <div class="cd-chat-wrap" id="cdChatWrap">
@@ -3223,6 +3265,18 @@ if(moments[idx]&&!moments[idx].liked){
 moments[idx].liked=true;moments[idx].likes=(moments[idx].likes||0)+1;
 localStorage.setItem('zz_moments',JSON.stringify(moments));
 if(typeof renderMoments==='function'){try{renderMoments()}catch(e){}}
+}
+break;
+case 'char_memory':
+/* 角色记忆存储 */
+if(p.text&&_cdIdx!==undefined&&_cdIdx!=='daily'){
+var memKey='zz_ch_mem_'+_cdIdx;
+var mems;try{mems=JSON.parse(localStorage.getItem(memKey)||'[]')}catch(e){mems=[]}
+var now=new Date();var ts=(now.getMonth()+1)+'/'+now.getDate()+' '+('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
+mems.push({text:p.text,time:ts});
+if(mems.length>30)mems=mems.slice(-30);
+localStorage.setItem(memKey,JSON.stringify(mems));
+if(typeof renderCdMemList==='function')renderCdMemList();
 }
 break;
 }
@@ -4338,8 +4392,20 @@ document.getElementById('cdEntryBgAdd').onclick=function(){openImgPicker('cdEntr
 document.getElementById('cdEntryT').textContent='与【'+(c.name||'角色')+'】的对话';
 /* 相册 */
 renderCdGal();
-/* 记忆占位 */
-document.getElementById('cdMemList').innerHTML='<li class="cd-mem-item"><div class="cd-mem-dot"></div>暂无记忆<div class="cd-mem-time"></div></li>';
+/* 记忆 */
+renderCdMemList();
+/* 记忆面板也渲染 */
+var memList2=document.getElementById('cdMemList2');
+if(memList2){var mems2;try{mems2=JSON.parse(localStorage.getItem('zz_ch_mem_'+_cdIdx)||'[]')}catch(e){mems2=[]}
+if(!mems2.length){memList2.innerHTML='<li class="cd-mem-item"><div class="cd-mem-dot"></div>暂无记忆</li>'}
+else{memList2.innerHTML=mems2.slice().reverse().map(function(m){return '<li class="cd-mem-item"><div class="cd-mem-dot"></div>'+m.text+'<div class="cd-mem-time">'+(m.time||'')+'</div></li>'}).join('')}
+}
+/* 设定面板 */
+var qe=document.getElementById('cdQuoteEdit');if(qe)qe.value=c.quote||'';
+var pe=document.getElementById('cdPersonality');if(pe)pe.value=c.personality||'';
+var ge=document.getElementById('cdGreeting');if(ge)ge.value=c.greeting||'';
+/* 语音面板 */
+setTimeout(function(){loadVoiceList();restoreVoiceUI()},200);
 /* 显示 */
 cdTab(0);document.getElementById('cdWrap').classList.add('on');
 document.getElementById('cdWrap').scrollTop=0;
@@ -4372,6 +4438,103 @@ ch[_cdIdx].tags[i]=val.trim();saveChars(ch);
 
 function renderCdGal(){
 var w=document.getElementById('cdGalWrap');w.innerHTML='';
+
+/* 角色记忆渲染 */
+function renderCdMemList(){
+var el=document.getElementById('cdMemList');if(!el)return;
+var mems;try{mems=JSON.parse(localStorage.getItem('zz_ch_mem_'+_cdIdx)||'[]')}catch(e){mems=[]}
+if(!mems.length){el.innerHTML='<li class="cd-mem-item"><div class="cd-mem-dot"></div>暂无记忆<div class="cd-mem-time"></div></li>';return}
+el.innerHTML=mems.slice().reverse().map(function(m){
+return '<li class="cd-mem-item"><div class="cd-mem-dot"></div>'+m.text+'<div class="cd-mem-time">'+(m.time||'')+'</div></li>';
+}).join('');
+}
+window.renderCdMemList=renderCdMemList;
+
+/* 手动添加记忆 */
+function addManualMem(){
+var inp=document.getElementById('cdMemInput');var t=inp.value.trim();if(!t)return;
+var memKey='zz_ch_mem_'+_cdIdx;
+var mems;try{mems=JSON.parse(localStorage.getItem(memKey)||'[]')}catch(e){mems=[]}
+var now=new Date();var ts=(now.getMonth()+1)+'/'+now.getDate()+' '+('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
+mems.push({text:t,time:ts});if(mems.length>30)mems=mems.slice(-30);
+localStorage.setItem(memKey,JSON.stringify(mems));
+inp.value='';renderCdMemList();showToast('已添加');
+}
+
+/* ===== 角色语音系统 ===== */
+function loadVoiceList(){
+var sel=document.getElementById('voiceSelect');if(!sel)return;
+var voices=speechSynthesis.getVoices();
+sel.innerHTML='';
+voices.forEach(function(v,i){
+var opt=document.createElement('option');opt.value=i;
+opt.textContent=v.name+(v.lang?' ('+v.lang+')':'');
+sel.appendChild(opt);
+});
+if(!voices.length){var opt=document.createElement('option');opt.textContent='加载中…';sel.appendChild(opt)}
+}
+if(window.speechSynthesis){
+speechSynthesis.onvoiceschanged=loadVoiceList;
+setTimeout(loadVoiceList,500);
+}
+
+function getCharVoice(){
+var ch=getChars()[_cdIdx];return(ch&&ch.voice)||{enabled:false,voiceIdx:0,rate:100,pitch:100};
+}
+function saveCharVoice(){
+var ch=getChars();if(!ch[_cdIdx])return;
+var sel=document.getElementById('voiceSelect');
+var rate=document.getElementById('voiceRate');
+var pitch=document.getElementById('voicePitch');
+ch[_cdIdx].voice={
+enabled:ch[_cdIdx].voice?ch[_cdIdx].voice.enabled:false,
+voiceIdx:sel?parseInt(sel.value)||0:0,
+rate:rate?parseInt(rate.value):100,
+pitch:pitch?parseInt(pitch.value):100
+};
+saveChars(ch);
+}
+function toggleCharVoice(){
+var ch=getChars();if(!ch[_cdIdx])return;
+if(!ch[_cdIdx].voice)ch[_cdIdx].voice={enabled:false,voiceIdx:0,rate:100,pitch:100};
+ch[_cdIdx].voice.enabled=!ch[_cdIdx].voice.enabled;
+saveChars(ch);
+updateVoiceToggleUI(ch[_cdIdx].voice.enabled);
+showToast(ch[_cdIdx].voice.enabled?'语音已开启':'语音已关闭');
+}
+function updateVoiceToggleUI(on){
+var tog=document.getElementById('voiceToggle');
+var dot=document.getElementById('voiceToggleDot');
+if(tog)tog.style.background=on?'rgba(80,145,255,.25)':'rgba(255,255,255,.06)';
+if(dot){dot.style.left=on?'21px':'1px';dot.style.background=on?'rgba(100,170,255,.8)':'rgba(200,220,240,.3)'}
+}
+function restoreVoiceUI(){
+var v=getCharVoice();
+updateVoiceToggleUI(v.enabled);
+var sel=document.getElementById('voiceSelect');if(sel)sel.value=v.voiceIdx;
+var rate=document.getElementById('voiceRate');if(rate){rate.value=v.rate;document.getElementById('voiceRateVal').textContent=(v.rate/100).toFixed(1)}
+var pitch=document.getElementById('voicePitch');if(pitch){pitch.value=v.pitch;document.getElementById('voicePitchVal').textContent=(v.pitch/100).toFixed(1)}
+}
+function testCharVoice(){
+if(!window.speechSynthesis){showToast('浏览器不支持语音合成');return}
+var v=getCharVoice();var voices=speechSynthesis.getVoices();
+var u=new SpeechSynthesisUtterance('你好，我是'+(getChars()[_cdIdx]||{}).name+'。');
+u.voice=voices[v.voiceIdx]||null;
+u.rate=v.rate/100;u.pitch=v.pitch/100;u.lang='zh-CN';
+speechSynthesis.cancel();speechSynthesis.speak(u);
+}
+function speakText(text){
+if(!window.speechSynthesis)return;
+if(_cdIdx==='daily')return;
+var v=getCharVoice();if(!v.enabled)return;
+var clean=text.replace(/<!--CMD.*?CMD-->/g,'').replace(/\n/g,' ').trim();
+if(!clean)return;
+var voices=speechSynthesis.getVoices();
+var u=new SpeechSynthesisUtterance(clean.substring(0,500));
+u.voice=voices[v.voiceIdx]||null;
+u.rate=v.rate/100;u.pitch=v.pitch/100;u.lang='zh-CN';
+speechSynthesis.cancel();speechSynthesis.speak(u);
+}
 var count=getChars()[_cdIdx]&&getChars()[_cdIdx].galCount||6;
 for(var i=0;i<count;i++){
 var k='cdGal'+_cdIdx+'_'+i;
@@ -4497,8 +4660,18 @@ var sysPrompt;
 if(_cdIdx==='daily'){
 sysPrompt=STABLE_PROMPT+'\n\n'+buildDynamicContext();
 }else{
-var chars=getChars();var ch=chars[_cdIdx]||{};
-sysPrompt='你正在扮演角色：'+(ch.name||'未命名')+'\n'+(ch.intro?'角色简介：'+ch.intro+'\n':'')+(ch.world?'世界观：'+ch.world+'\n':'')+buildDynamicContext();
+var chars=getChars();var ch=chars[_cdIdx]||{};var info=ch.info||{};
+var cCtx='你正在扮演角色：'+(ch.name||'未命名')+'\n';
+if(ch.tags&&ch.tags.length)cCtx+='标签：'+ch.tags.join('、')+'\n';
+var det=[];var fL2=['本名','种族','年龄','身高','身份','势力','标记','世界'];
+var fK2=['realName','race','age','height','identity','faction','mark','world'];
+fK2.forEach(function(k,i){if(info[k])det.push(fL2[i]+'：'+info[k])});
+if(det.length)cCtx+='角色设定：'+det.join('｜')+'\n';
+if(ch.intro)cCtx+='角色简介：'+ch.intro+'\n';
+if(ch.world)cCtx+='世界观：'+ch.world+'\n';
+var cm2;try{cm2=JSON.parse(localStorage.getItem('zz_ch_mem_'+_cdIdx)||'[]')}catch(e){cm2=[]}
+if(cm2.length){cCtx+='\n【角色记忆】\n';cm2.slice(-10).forEach(function(m){cCtx+='- '+m.text+'\n'})}
+sysPrompt=cCtx+buildDynamicContext();
 }
 /* base64数据 */
 var b64=imgDataUrl.split(',')[1]||'';
@@ -4533,6 +4706,7 @@ reply=parseSysCommands(reply);
 var el=document.getElementById('cdTyping');if(el)el.remove();
 var msgs2=getCdMsgs();msgs2.push({role:'assistant',text:reply,time:new Date().toLocaleTimeString()});
 saveCdMsgs(msgs2);renderCdMsgs();
+if(typeof speakText==="function")speakText(reply);
 /* 记录usage */
 var u=data.usage;
 if(u){
@@ -4548,10 +4722,11 @@ var el=document.getElementById('cdTyping');if(el)el.remove();
 showToast(e.message||'图片发送失败');
 });
 }
-function cdSendMsg(){
-var inp=document.getElementById('cdChatInp');var t=(inp.textContent||inp.innerText||'').trim();if(!t)return;
-var msgs=getCdMsgs();msgs.push({role:'user',text:t,time:new Date().toLocaleTimeString()});
-saveCdMsgs(msgs);inp.textContent='';renderCdMsgs();
+function cdSendMsg(autoTrigger){
+var inp=document.getElementById('cdChatInp');var t=(inp.textContent||inp.innerText||'').trim();
+if(!t&&!autoTrigger)return;
+if(t){var msgs=getCdMsgs();msgs.push({role:'user',text:t,time:new Date().toLocaleTimeString()});
+saveCdMsgs(msgs);inp.textContent='';renderCdMsgs();}
 /* 收起菜单 */
 document.getElementById('cdChatMenu').classList.remove('on');
 document.getElementById('cdChatPlus').classList.remove('on');
@@ -4564,17 +4739,43 @@ if(_cdIdx==='daily'){
 sysPrompt=STABLE_PROMPT+'\n\n'+buildDynamicContext();
 }else{
 var chars=getChars();var ch=chars[_cdIdx]||{};
+var info=ch.info||{};
 var charCtx='你正在扮演角色：'+(ch.name||'未命名')+'\n';
+if(ch.quote)charCtx+='角色台词：'+ch.quote+'\n';
+if(ch.tags&&ch.tags.length)charCtx+='标签：'+ch.tags.join('、')+'\n';
+/* 详细设定 */
+var fLabels=['本名','种族','年龄','身高','身份','势力','标记','世界'];
+var fKeys=['realName','race','age','height','identity','faction','mark','world'];
+var details=[];
+fKeys.forEach(function(k,i){if(info[k])details.push(fLabels[i]+'：'+info[k])});
+if(details.length)charCtx+='角色设定：'+details.join('｜')+'\n';
 if(ch.intro)charCtx+='角色简介：'+ch.intro+'\n';
+if(ch.personality)charCtx+='性格描述：'+ch.personality+'\n';
 if(ch.world)charCtx+='世界观：'+ch.world+'\n';
-charCtx+='请以这个角色的身份回复。保持角色性格一致。\n';
+if(ch.greeting)charCtx+='开场白：'+ch.greeting+'\n';
+/* 角色记忆 */
+var charMem;try{charMem=JSON.parse(localStorage.getItem('zz_ch_mem_'+_cdIdx)||'[]')}catch(e){charMem=[]}
+if(charMem.length){charCtx+='\n【角色记忆】\n';charMem.slice(-10).forEach(function(m){charCtx+='- '+m.text+(m.time?' ('+m.time+')':'')+'\n'})}
+charCtx+='\n请以这个角色的身份回复。保持角色性格一致。可以用 <!--CMD{"action":"char_memory","params":{"text":"要记住的内容"}}CMD--> 来保存重要记忆。\n';
 sysPrompt=charCtx+'\n'+buildDynamicContext();
 }
 /* 组装历史 */
 var history=getCdMsgs();
 var apiMsgs=[];
 history.forEach(function(m){
-if(m.text)apiMsgs.push({role:m.role==='user'?'user':'assistant',content:m.text});
+var role=m.role==='user'?'user':'assistant';
+if(m.fileB64&&m.fileType==='pdf'){
+/* PDF文件：作为document发送 */
+var b64data=m.fileB64.replace(/^data:[^;]+;base64,/,'');
+apiMsgs.push({role:role,content:[{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64data}},{type:'text',text:m.text||'请阅读这个PDF'}]});
+}else if(m.img){
+/* 图片 */
+var imgData=m.img.replace(/^data:[^;]+;base64,/,'');
+var mtype=m.img.match(/^data:([^;]+);/);mtype=mtype?mtype[1]:'image/jpeg';
+apiMsgs.push({role:role,content:[{type:'image',source:{type:'base64',media_type:mtype,data:imgData}},{type:'text',text:m.text||'看这张图'}]});
+}else if(m.text){
+apiMsgs.push({role:role,content:m.text});
+}
 });
 if(apiMsgs.length>20)apiMsgs=apiMsgs.slice(-20);
 /* 显示输入中 */
@@ -4584,17 +4785,25 @@ var w=document.getElementById('cdChatMsgs');w.appendChild(typing);w.scrollTop=w.
 /* 发请求 */
 var isOR=isOpenRouterCfg(cfg);
 var url,headers,body;
+var webTools=window._webSearchMode?true:false;
 if(isOR){
 url=(cfg.proxy||'https://openrouter.ai/api')+'/v1/chat/completions';
 headers={'Content-Type':'application/json','Authorization':'Bearer '+cfg.key,'HTTP-Referer':'https://lz520-qkl.github.io/-/','X-Title':'LittleHouse'};
 var orMsgs=[{role:'system',content:sysPrompt}].concat(apiMsgs);
-body=JSON.stringify({model:cfg.model||'anthropic/claude-sonnet-4-6',max_tokens:4096,messages:orMsgs});
+var orBody={model:cfg.model||'anthropic/claude-sonnet-4-6',max_tokens:4096,messages:orMsgs};
+if(webTools)orBody.plugins=[{id:'web'}];
+body=JSON.stringify(orBody);
 }else{
 url=cfg.proxy?(cfg.proxy+'/v1/messages'):'https://api.anthropic.com/v1/messages';
 headers={'Content-Type':'application/json','x-api-key':cfg.key,'anthropic-version':'2023-06-01'};
 var antMsgs=[{role:'user',content:[{type:'text',text:sysPrompt}]}].concat(apiMsgs);
-body=JSON.stringify({model:cfg.model||'claude-sonnet-4-6',max_tokens:4096,messages:antMsgs});
+var antBody={model:cfg.model||'claude-sonnet-4-6',max_tokens:4096,messages:antMsgs};
+if(webTools)antBody.tools=[{type:'web_search_20250305',name:'web_search',max_uses:3}];
+body=JSON.stringify(antBody);
 }
+/* 发送后关闭联网模式 */
+window._webSearchMode=false;
+var plusBtn=document.getElementById('cdChatPlus');if(plusBtn)plusBtn.style.color='';
 fetch(url,{method:'POST',headers:headers,body:body}).then(function(r){
 if(!r.ok)return r.text().then(function(t){throw new Error('API错误 '+r.status+': '+t.slice(0,80))});
 return r.json();
@@ -4607,6 +4816,7 @@ reply=parseSysCommands(reply);
 var el=document.getElementById('cdTyping');if(el)el.remove();
 var msgs2=getCdMsgs();msgs2.push({role:'assistant',text:reply,time:new Date().toLocaleTimeString()});
 saveCdMsgs(msgs2);renderCdMsgs();
+if(typeof speakText==="function")speakText(reply);
 /* 记录usage */
 var u=data.usage;
 if(u){
@@ -4663,12 +4873,98 @@ var gi2=document.getElementById('globalImgInput');
 gi2.accept='*/*';
 gi2.onchange=function(){
 if(!gi2.files||!gi2.files[0])return;
-var f=gi2.files[0];
-var msgs=getCdMsgs();msgs.push({role:'user',text:'📎 '+f.name,time:new Date().toLocaleTimeString()});
-saveCdMsgs(msgs);renderCdMsgs();gi2.accept='image/*';gi2.value='';
-};gi2.click();
+var f=gi2.files[0];var name=f.name;
+var ext=name.split('.').pop().toLowerCase();
+var textExts=['txt','md','csv','json','js','py','html','css','xml','yml','yaml','log','ini','cfg','conf','sh','bat','java','c','cpp','h','rb','php','swift','kt','go','rs','ts','jsx','tsx','vue','sql','toml','env','gitignore','rtf'];
+if(textExts.indexOf(ext)!==-1||f.type.indexOf('text/')===0){
+/* 文本文件：读内容 */
+var reader=new FileReader();
+reader.onload=function(ev){
+var content=ev.target.result||'';
+if(content.length>15000)content=content.substring(0,15000)+'\n\n...(文件过长，已截取前15000字符)';
+var fullText='📎 '+name+'\n───\n'+content;
+var msgs=getCdMsgs();msgs.push({role:'user',text:fullText,time:new Date().toLocaleTimeString()});
+saveCdMsgs(msgs);renderCdMsgs();
+cdSendMsg(true);
+};reader.readAsText(f,'UTF-8');
+}else if(ext==='pdf'){
+/* PDF：读为base64，标记为fileData */
+var reader=new FileReader();
+reader.onload=function(ev){
+var b64=ev.target.result;
+var msgs=getCdMsgs();msgs.push({role:'user',text:'📎 '+name,fileB64:b64,fileType:'pdf',time:new Date().toLocaleTimeString()});
+try{saveCdMsgs(msgs)}catch(e){msgs[msgs.length-1].fileB64=null;msgs[msgs.length-1].text='📎 '+name+' (文件太大无法缓存，请重新发送)';saveCdMsgs(msgs)}
+renderCdMsgs();
+cdSendMsg(true);
+};reader.readAsDataURL(f);
 }else{
-showToast(type==='web'?'联网搜索 即将开放':type==='voice'?'语音输入 即将开放':type==='camera'?'拍照 即将开放':'位置分享 即将开放');
+/* 其他格式：尝试当文本读 */
+var reader=new FileReader();
+reader.onload=function(ev){
+var content=ev.target.result||'';
+if(content.length>15000)content=content.substring(0,15000)+'\n\n...(文件过长，已截取前15000字符)';
+var fullText='📎 '+name+'\n───\n'+content;
+var msgs=getCdMsgs();msgs.push({role:'user',text:fullText,time:new Date().toLocaleTimeString()});
+try{saveCdMsgs(msgs)}catch(e){showToast('文件太大')}
+renderCdMsgs();
+cdSendMsg(true);
+};reader.onerror=function(){
+var msgs=getCdMsgs();msgs.push({role:'user',text:'📎 '+name+' (无法读取)',time:new Date().toLocaleTimeString()});
+saveCdMsgs(msgs);renderCdMsgs();
+};reader.readAsText(f,'UTF-8');
+}
+gi2.accept='image/*';gi2.value='';
+};gi2.click();
+}else if(type==='web'){
+/* 联网搜索：标记下一条消息启用web_search工具 */
+window._webSearchMode=!window._webSearchMode;
+if(window._webSearchMode){
+showToast('🌐 联网模式已开启');
+var plusBtn=document.getElementById('cdChatPlus');
+if(plusBtn)plusBtn.style.color='rgba(100,180,255,.8)';
+}else{
+showToast('联网模式已关闭');
+var plusBtn=document.getElementById('cdChatPlus');
+if(plusBtn)plusBtn.style.color='';
+}
+}else if(type==='voice'){
+/* 语音输入 */
+var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!SR){showToast('此浏览器不支持语音识别');return}
+var rec=new SR();rec.lang='zh-CN';rec.continuous=false;rec.interimResults=true;
+var inp=document.getElementById('cdChatInp');
+var origText=inp.textContent||'';
+showToast('🎙 请说话…');
+rec.onresult=function(e){
+var transcript='';
+for(var i=0;i<e.results.length;i++){transcript+=e.results[i][0].transcript}
+inp.textContent=origText+transcript;
+};
+rec.onerror=function(e){showToast('语音识别失败: '+e.error)};
+rec.onend=function(){showToast('语音输入完成')};
+rec.start();
+}else if(type==='camera'){
+/* 拍照：调用相机 */
+var gi3=document.getElementById('globalImgInput');
+gi3.accept='image/*';gi3.setAttribute('capture','environment');
+gi3.onchange=function(){
+if(!gi3.files||!gi3.files[0])return;
+var reader=new FileReader();
+reader.onload=function(ev){
+var img=new Image();img.onload=function(){
+var cv=document.createElement('canvas');
+var max=800;var w=img.width,h=img.height;
+if(w>max||h>max){if(w>h){h=h*max/w;w=max}else{w=w*max/h;h=max}}
+cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);
+var d=cv.toDataURL('image/jpeg',0.85);
+var msgs=getCdMsgs();msgs.push({role:'user',img:d,time:new Date().toLocaleTimeString()});
+saveCdMsgs(msgs);renderCdMsgs();cdSendImgToAPI(d);
+};img.src=ev.target.result;
+};reader.readAsDataURL(gi3.files[0]);
+gi3.removeAttribute('capture');gi3.accept='image/*';gi3.value='';
+};gi3.click();
+}else{
+showToast('位置分享 即将开放');
 }
 /* 收起菜单 */
 document.getElementById('cdChatMenu').classList.remove('on');
